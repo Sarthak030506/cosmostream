@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+  }
+
+  * {
+    @apply border-gray-800;
+  }
+
+  body {
+    @apply bg-gray-950 text-gray-100;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-900;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-700 rounded-md;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-600;
+  }
+}
+
+@layer components {
+  .container {
+    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-md bg-cosmos-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-cosmos-700 focus:outline-none focus:ring-2 focus:ring-cosmos-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-md bg-gray-800 px-4 py-2 text-sm font-medium text-gray-100 shadow-sm transition-colors hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
+  }
+
+  .input-field {
+    @apply block w-full rounded-md border-gray-700 bg-gray-900 text-gray-100 shadow-sm focus:border-cosmos-500 focus:ring-cosmos-500 sm:text-sm;
+  }
+
+  .card {
+    @apply rounded-lg bg-gray-900 p-6 shadow-lg ring-1 ring-gray-800;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Video.js custom theme */
+.video-js {
+  font-family: var(--font-inter);
+}
+
+.vjs-theme-cosmos {
+  --vjs-theme-cosmos--primary: #6366f1;
+  --vjs-theme-cosmos--secondary: #d946ef;
+}
+
+.vjs-theme-cosmos .vjs-big-play-button {
+  background-color: rgba(99, 102, 241, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  line-height: 80px;
+  font-size: 48px;
+}
+
+.vjs-theme-cosmos .vjs-big-play-button:hover {
+  background-color: rgb(99, 102, 241);
+}
+
+/* Loading animation */
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
