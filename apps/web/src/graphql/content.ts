@@ -160,6 +160,11 @@ export const GET_CONTENT_ITEM = gql`
         name
         profile {
           avatar
+          bio
+        }
+        creatorProfile {
+          verified
+          subscriberCount
         }
       }
       video {

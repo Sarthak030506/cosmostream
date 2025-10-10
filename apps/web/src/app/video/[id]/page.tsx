@@ -23,7 +23,9 @@ const GET_VIDEO = gql`
       creator {
         id
         name
-        avatarUrl
+        profile {
+          avatar
+        }
       }
     }
   }
