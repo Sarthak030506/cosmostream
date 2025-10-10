@@ -4,6 +4,7 @@ import { videoResolvers } from './video';
 import { forumResolvers } from './forum';
 import { courseResolvers } from './course';
 import { subscriptionResolvers } from './subscription';
+import { contentResolvers } from './content';
 import { GraphQLScalarType, Kind } from 'graphql';
 
 const dateTimeScalar = new GraphQLScalarType({
@@ -23,13 +24,35 @@ const dateTimeScalar = new GraphQLScalarType({
   },
 });
 
+const jsonScalar = new GraphQLScalarType({
+  name: 'JSON',
+  description: 'JSON custom scalar type',
+  serialize(value: any) {
+    return value;
+  },
+  parseValue(value: any) {
+    return value;
+  },
+  parseLiteral(ast) {
+    if (ast.kind === Kind.OBJECT) {
+      return ast;
+    }
+    if (ast.kind === Kind.STRING) {
+      return JSON.parse(ast.value);
+    }
+    return null;
+  },
+});
+
 export const resolvers = {
   DateTime: dateTimeScalar,
+  JSON: jsonScalar,
   Query: {
     ...userResolvers.Query,
     ...videoResolvers.Query,
     ...forumResolvers.Query,
     ...courseResolvers.Query,
+    ...contentResolvers.Query,
   },
   Mutation: {
     ...authResolvers.Mutation,
@@ -38,9 +61,13 @@ export const resolvers = {
     ...forumResolvers.Mutation,
     ...courseResolvers.Mutation,
     ...subscriptionResolvers.Mutation,
+    ...contentResolvers.Mutation,
   },
   User: userResolvers.User,
   Video: videoResolvers.Video,
   Thread: forumResolvers.Thread,
   Post: forumResolvers.Post,
+  ContentCategory: contentResolvers.ContentCategory,
+  ContentItem: contentResolvers.ContentItem,
+  UserAstronomyProfile: contentResolvers.UserAstronomyProfile,
 };

@@ -8,7 +8,7 @@ export const videoResolvers = {
     async video(_: any, { id }: any, { db }: Context) {
       const result = await db.query(
         `SELECT id, title, description, creator_id, status, thumbnail_url,
-                manifest_url, duration, tags, category, views, likes,
+                manifest_url, duration, tags, category, difficulty, views, likes,
                 created_at, updated_at
          FROM videos WHERE id = $1`,
         [id]
@@ -28,7 +28,7 @@ export const videoResolvers = {
     ) {
       let query = `
         SELECT id, title, description, creator_id, status, thumbnail_url,
-               manifest_url, duration, tags, category, views, likes,
+               manifest_url, duration, tags, category, difficulty, views, likes,
                created_at, updated_at
         FROM videos
         WHERE status = 'ready'
@@ -61,7 +61,7 @@ export const videoResolvers = {
       // Simplified search - in production use Elasticsearch
       const result = await db.query(
         `SELECT id, title, description, creator_id, status, thumbnail_url,
-                manifest_url, duration, tags, category, views, likes,
+                manifest_url, duration, tags, category, difficulty, views, likes,
                 created_at, updated_at
          FROM videos
          WHERE status = 'ready'
@@ -177,7 +177,7 @@ export const videoResolvers = {
 
       const result = await db.query(
         `SELECT id, title, description, creator_id, status, thumbnail_url,
-                manifest_url, duration, tags, category, views, likes,
+                manifest_url, duration, tags, category, difficulty, views, likes,
                 created_at, updated_at
          FROM videos WHERE id = $1`,
         [id]
@@ -216,6 +216,29 @@ export const videoResolvers = {
   },
 
   Video: {
+    status(parent: any) {
+      // Convert database lowercase status to GraphQL enum uppercase
+      return parent.status.toUpperCase();
+    },
+
+    createdAt(parent: any) {
+      // Map snake_case to camelCase
+      return parent.created_at;
+    },
+
+    updatedAt(parent: any) {
+      // Map snake_case to camelCase
+      return parent.updated_at;
+    },
+
+    thumbnailUrl(parent: any) {
+      return parent.thumbnail_url;
+    },
+
+    manifestUrl(parent: any) {
+      return parent.manifest_url;
+    },
+
     async creator(parent: any, _: any, { db }: Context) {
       const result = await db.query(
         'SELECT id, email, name, role, created_at FROM users WHERE id = $1',

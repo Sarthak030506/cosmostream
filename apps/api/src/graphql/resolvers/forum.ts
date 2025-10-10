@@ -162,6 +162,16 @@ export const forumResolvers = {
   },
 
   Thread: {
+    createdAt(parent: any) {
+      // Map snake_case to camelCase
+      return parent.created_at;
+    },
+
+    updatedAt(parent: any) {
+      // Map snake_case to camelCase
+      return parent.updated_at;
+    },
+
     async creator(parent: any, _: any, { db }: Context) {
       const result = await db.query(
         'SELECT id, email, name, role, created_at FROM users WHERE id = $1',
@@ -195,6 +205,21 @@ export const forumResolvers = {
   },
 
   Post: {
+    createdAt(parent: any) {
+      // Map snake_case to camelCase
+      return parent.created_at;
+    },
+
+    updatedAt(parent: any) {
+      // Map snake_case to camelCase
+      return parent.updated_at;
+    },
+
+    isExpertAnswer(parent: any) {
+      // Map snake_case to camelCase
+      return parent.is_expert_answer;
+    },
+
     async thread(parent: any, _: any, { db }: Context) {
       const result = await db.query(
         `SELECT id, title, creator_id, category, tags, created_at, updated_at

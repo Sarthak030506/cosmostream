@@ -52,6 +52,7 @@ export const typeDefs = gql`
     duration: Int
     tags: [String!]!
     category: String
+    difficulty: String
     views: Int!
     likes: Int!
     createdAt: DateTime!
@@ -161,6 +162,27 @@ export const typeDefs = gql`
     threads(category: String, limit: Int, offset: Int): [Thread!]!
     course(id: ID!): Course
     courses(limit: Int, offset: Int): [Course!]!
+
+    # Content Discovery Queries
+    categories(parentId: ID, difficultyLevel: DifficultyLevel, featured: Boolean, limit: Int, offset: Int): [ContentCategory!]!
+    category(id: ID, slug: String): ContentCategory
+    categoryStats: CategoryStats!
+
+    contentItem(id: ID!): ContentItem
+    discoverContent(filters: ContentFilters, sortBy: ContentSortBy, limit: Int, offset: Int): ContentFeed!
+    searchContent(query: String!, filters: ContentFilters, limit: Int, offset: Int): ContentFeed!
+
+    # Personalized content based on astronomy level
+    recommendedForMe(limit: Int): [ContentItem!]!
+    trendingContent(limit: Int): [ContentItem!]!
+
+    # User profile
+    myAstronomyProfile: UserAstronomyProfile
+    userAstronomyProfile(userId: ID!): UserAstronomyProfile
+
+    # User's content collections
+    myFollowedCategories: [ContentCategory!]!
+    myBookmarkedContent(limit: Int, offset: Int): [ContentItem!]!
   }
 
   type Mutation {
@@ -191,10 +213,198 @@ export const typeDefs = gql`
     # Subscription
     createSubscription(tier: SubscriptionTier!): Subscription!
     cancelSubscription: Boolean!
+
+    # Content Discovery Mutations
+
+    # Onboarding and profile
+    setAstronomyLevel(level: AstronomyLevel!, interests: [String!], preferredTopics: [String!]): UserAstronomyProfile!
+    updateAstronomyProfile(level: AstronomyLevel, interests: [String!], preferredTopics: [String!]): UserAstronomyProfile!
+
+    # Social actions
+    followCategory(categoryId: ID!): Boolean!
+    unfollowCategory(categoryId: ID!): Boolean!
+
+    bookmarkContent(contentItemId: ID!, note: String, folder: String): Boolean!
+    removeBookmark(contentItemId: ID!): Boolean!
+
+    voteContent(contentItemId: ID!, value: Int!): ContentItem!
+    removeVote(contentItemId: ID!): ContentItem!
+
+    shareContent(contentItemId: ID!, platform: SharePlatform!): Boolean!
+
+    # Content creation (future use)
+    createContentItem(input: ContentItemInput!): ContentItem!
+    updateContentItem(id: ID!, input: ContentItemInput!): ContentItem!
+    deleteContentItem(id: ID!): Boolean!
+
+    # Record view
+    recordContentView(contentItemId: ID!, viewDuration: Int, completed: Boolean): Boolean!
   }
 
   type Subscription {
     videoProcessingUpdate(videoId: ID!): Video!
     newThreadPost(threadId: ID!): Post!
+  }
+
+  # ====================================
+  # CONTENT DISCOVERY SYSTEM
+  # ====================================
+
+  # Enums for content system
+  enum AstronomyLevel {
+    BEGINNER
+    INTERMEDIATE
+    ADVANCED
+    EXPERT
+  }
+
+  enum DifficultyLevel {
+    BEGINNER
+    INTERMEDIATE
+    ADVANCED
+    EXPERT
+    ALL
+  }
+
+  enum AgeGroup {
+    KIDS
+    TEENS
+    ADULTS
+    ALL
+  }
+
+  enum ContentType {
+    VIDEO
+    ARTICLE
+    TUTORIAL
+    GUIDE
+    NEWS
+  }
+
+  enum ContentSortBy {
+    TRENDING
+    RECENT
+    POPULAR
+    RECOMMENDED
+    ENGAGEMENT
+  }
+
+  enum SharePlatform {
+    TWITTER
+    FACEBOOK
+    LINKEDIN
+    REDDIT
+    LINK
+    EMAIL
+  }
+
+  # Category types
+  type ContentCategory {
+    id: ID!
+    name: String!
+    description: String
+    slug: String!
+    parentCategory: ContentCategory
+    subCategories: [ContentCategory!]!
+    difficultyLevel: DifficultyLevel!
+    ageGroup: AgeGroup!
+    tags: [String!]!
+    iconEmoji: String
+    sortOrder: Int!
+    isFeatured: Boolean!
+    contentCount: Int!
+    followerCount: Int!
+    isFollowing: Boolean
+    featuredContent: [ContentItem!]!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+  }
+
+  # Content item types
+  type ContentItem {
+    id: ID!
+    title: String!
+    description: String
+    bodyMarkdown: String
+    category: ContentCategory!
+    author: User!
+    contentType: ContentType!
+    difficultyLevel: DifficultyLevel!
+    ageGroup: AgeGroup!
+    tags: [String!]!
+    mediaUrls: JSON
+    video: Video
+    engagementScore: Int!
+    viewCount: Int!
+    upvotes: Int!
+    downvotes: Int!
+    shareCount: Int!
+    bookmarkCount: Int!
+    userVote: Int
+    isBookmarked: Boolean
+    createdAt: DateTime!
+    updatedAt: DateTime!
+  }
+
+  # User astronomy profile
+  type UserAstronomyProfile {
+    user: User!
+    astronomyLevel: AstronomyLevel!
+    interests: [String!]!
+    preferredTopics: [String!]!
+    onboardingCompleted: Boolean!
+    followedCategoriesCount: Int!
+    bookmarkedContentCount: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+  }
+
+  # Feed result type
+  type ContentFeed {
+    items: [ContentItem!]!
+    hasMore: Boolean!
+    totalCount: Int!
+  }
+
+  # Category stats
+  type CategoryStats {
+    totalCategories: Int!
+    byDifficulty: [DifficultyCount!]!
+    byAgeGroup: [AgeGroupCount!]!
+    mostPopular: [ContentCategory!]!
+  }
+
+  type DifficultyCount {
+    difficulty: DifficultyLevel!
+    count: Int!
+  }
+
+  type AgeGroupCount {
+    ageGroup: AgeGroup!
+    count: Int!
+  }
+
+  # Input types
+  input ContentFilters {
+    categoryId: ID
+    categorySlug: String
+    difficultyLevel: DifficultyLevel
+    ageGroup: AgeGroup
+    contentType: ContentType
+    tags: [String!]
+    authorId: ID
+  }
+
+  input ContentItemInput {
+    title: String!
+    description: String
+    bodyMarkdown: String!
+    categoryId: ID!
+    contentType: ContentType!
+    difficultyLevel: DifficultyLevel!
+    ageGroup: AgeGroup!
+    tags: [String!]
+    mediaUrls: JSON
+    videoId: ID
   }
 `;

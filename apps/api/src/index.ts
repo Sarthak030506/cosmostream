@@ -1,3 +1,7 @@
+// Load environment variables FIRST before any other imports
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
@@ -5,16 +9,21 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import morgan from 'morgan';
-import dotenv from 'dotenv';
 import { typeDefs } from './graphql/schema';
 import { resolvers } from './graphql/resolvers';
 import { createContext } from './context';
 import { logger } from './utils/logger';
 import { errorHandler } from './middleware/errorHandler';
 
-dotenv.config();
-
 const PORT = process.env.PORT || 4000;
+
+// Log environment variables for debugging
+logger.info('Environment variables loaded:', {
+  NODE_ENV: process.env.NODE_ENV,
+  DATABASE_URL: process.env.DATABASE_URL ? 'Set (hidden)' : 'NOT SET',
+  REDIS_URL: process.env.REDIS_URL ? 'Set (hidden)' : 'NOT SET',
+  JWT_SECRET: process.env.JWT_SECRET ? 'Set (hidden)' : 'NOT SET',
+});
 
 async function startServer() {
   const app = express();

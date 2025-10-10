@@ -54,6 +54,7 @@ CREATE TABLE videos (
     duration INTEGER,
     tags TEXT[] DEFAULT ARRAY[]::TEXT[],
     category VARCHAR(100),
+    difficulty VARCHAR(50),
     views INTEGER DEFAULT 0,
     likes INTEGER DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
