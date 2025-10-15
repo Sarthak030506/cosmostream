@@ -38,11 +38,13 @@ export function FeaturedVideos() {
   ];
 
   return (
-    <section className="py-16 bg-gray-950">
+    <section className="relative py-16">
       <div className="container">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-3xl font-bold">Featured Content</h2>
-          <a href="/browse" className="text-sm text-cosmos-400 hover:text-cosmos-300">
+        <div className="mb-8 flex items-center justify-between">
+          <h2 className="text-3xl font-bold text-white drop-shadow-lg" style={{ textShadow: '0 4px 16px rgba(0, 0, 0, 0.9)' }}>
+            Featured Content
+          </h2>
+          <a href="/browse" className="text-sm text-cosmos-400 drop-shadow-md hover:text-cosmos-300">
             View all →
           </a>
         </div>
@@ -52,7 +54,7 @@ export function FeaturedVideos() {
             <a
               key={video.id}
               href={`/watch/${video.id}`}
-              className="group overflow-hidden rounded-lg bg-gray-900 transition-transform hover:scale-105"
+              className="group overflow-hidden rounded-xl border border-white/20 bg-gradient-to-br from-gray-900/80 to-gray-950/80 backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:border-cosmos-400/50 hover:shadow-xl hover:shadow-cosmos-500/20"
             >
               <div className="relative aspect-video">
                 <img

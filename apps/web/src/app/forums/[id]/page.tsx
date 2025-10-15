@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, gql } from '@apollo/client';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Navigation } from '@/components/layout/Navigation';
 
@@ -60,7 +60,6 @@ const VOTE_POST = gql`
 `;
 
 export default function ThreadDetailPage() {
-  const router = useRouter();
   const params = useParams();
   const threadId = params.id as string;
 
@@ -185,7 +184,7 @@ export default function ThreadDetailPage() {
 
         {/* Posts List */}
         <div className="space-y-4 mb-6">
-          {posts.map((post: any, index: number) => (
+          {posts.map((post: any) => (
             <div
               key={post.id}
               className={`bg-gray-900/50 backdrop-blur-sm border rounded-xl p-6 ${

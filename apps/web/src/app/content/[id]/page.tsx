@@ -312,7 +312,8 @@ export default function ContentDetailPage() {
                   channelName={content.mediaUrls.channel_name}
                   channelId={content.mediaUrls.channel_id}
                   publishedAt={content.mediaUrls.published_at}
-                  mode="full"
+                  videoId={content.mediaUrls.video_id}
+                  compact={false}
                 />
 
                 {/* Description if available */}

@@ -1,0 +1,7 @@
+{
+  "query": "mutation SyncCategory($categoryId: ID!, $limit: Int) { syncYouTubeCategory(categoryId: $categoryId, limit: $limit) { jobId categoryName videosFetched videosImported videosSkipped videosFailed quotaCost durationSeconds errors } }",
+  "variables": {
+    "categoryId": "43912adb-fed7-4348-9250-eb04694b7567",
+    "limit": 10
+  }
+}

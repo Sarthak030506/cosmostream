@@ -120,7 +120,7 @@ export default function CategoryDetailPage() {
     );
   }
 
-  const breadcrumbItems = [
+  const breadcrumbItems: Array<{ label: string; href: string; emoji?: string }> = [
     { label: 'Discover', href: '/discover' },
     { label: 'Categories', href: '/categories' },
   ];

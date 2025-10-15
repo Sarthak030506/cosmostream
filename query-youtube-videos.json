@@ -1,0 +1,3 @@
+{
+  "query": "query GetYouTubeVideos { discoverContent(filters: {}, sortBy: RECENT, limit: 10) { items { id title description sourceType mediaUrls viewCount upvotes category { name } } totalCount } }"
+}
