@@ -69,10 +69,63 @@ export default function BrowsePage() {
       <Navigation />
 
       <div className="container mx-auto px-4 py-8">
+        {/* Coming Soon Banner */}
+        <div className="mb-8 bg-gradient-to-r from-cosmos-600/20 via-nebula-600/20 to-cosmos-600/20 border border-cosmos-500/30 rounded-xl p-8 backdrop-blur-sm">
+          <div className="flex items-start gap-6">
+            <div className="text-6xl">🚀</div>
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2">
+                <h2 className="text-2xl font-bold text-white">Native Video Uploads</h2>
+                <span className="px-3 py-1 bg-yellow-500/20 text-yellow-300 text-sm font-semibold rounded-full border border-yellow-500/30">
+                  Coming Soon
+                </span>
+              </div>
+              <p className="text-gray-300 mb-4">
+                This section will allow creators to upload their own space and astronomy videos directly to CosmoStream.
+                Features will include video transcoding, HLS streaming, and creator monetization.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-700 rounded-lg p-4">
+                  <div className="text-3xl mb-2">📹</div>
+                  <h3 className="text-white font-semibold mb-1">Upload Your Videos</h3>
+                  <p className="text-gray-400 text-sm">Direct upload with automatic transcoding to multiple resolutions</p>
+                </div>
+                <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-700 rounded-lg p-4">
+                  <div className="text-3xl mb-2">💰</div>
+                  <h3 className="text-white font-semibold mb-1">Monetization</h3>
+                  <p className="text-gray-400 text-sm">Earn from subscriptions and premium content</p>
+                </div>
+                <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-700 rounded-lg p-4">
+                  <div className="text-3xl mb-2">📊</div>
+                  <h3 className="text-white font-semibold mb-1">Analytics</h3>
+                  <p className="text-gray-400 text-sm">Detailed insights on views, engagement, and revenue</p>
+                </div>
+              </div>
+              <div className="mt-6 flex gap-4">
+                <a
+                  href="/discover"
+                  className="px-6 py-3 bg-cosmos-600 hover:bg-cosmos-500 text-white rounded-lg font-semibold transition inline-flex items-center gap-2"
+                >
+                  <span>Browse YouTube Content</span>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </a>
+                <button
+                  disabled
+                  className="px-6 py-3 bg-gray-700 text-gray-400 rounded-lg font-semibold cursor-not-allowed inline-flex items-center gap-2"
+                >
+                  <span>Upload Video (Coming Soon)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">Browse Videos</h1>
-          <p className="text-gray-400">Explore our collection of space and astronomy content</p>
+          <h1 className="text-4xl font-bold text-white mb-2">Browse Native Videos</h1>
+          <p className="text-gray-400">Creator-uploaded videos will appear here once the upload feature is live</p>
         </div>
 
         {/* Search Bar */}
@@ -173,10 +226,23 @@ export default function BrowsePage() {
             <p className="text-gray-400">{error.message}</p>
           </div>
         ) : filteredVideos.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">🔍</div>
-            <h3 className="text-xl font-bold text-white mb-2">No Videos Found</h3>
-            <p className="text-gray-400">Try adjusting your filters or search query</p>
+          <div className="text-center py-16">
+            <div className="inline-block p-6 bg-gray-900/50 backdrop-blur-sm border border-gray-700 rounded-2xl mb-6">
+              <div className="text-7xl mb-4">📹</div>
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-3">No Native Videos Yet</h3>
+            <p className="text-gray-400 mb-6 max-w-md mx-auto">
+              This page will showcase videos uploaded directly by creators. In the meantime, explore our curated YouTube content collection!
+            </p>
+            <a
+              href="/discover"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-cosmos-600 hover:bg-cosmos-500 text-white rounded-lg font-semibold transition"
+            >
+              <span>Explore YouTube Content</span>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </a>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

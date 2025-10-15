@@ -183,6 +183,15 @@ export const typeDefs = gql`
     # User's content collections
     myFollowedCategories: [ContentCategory!]!
     myBookmarkedContent(limit: Int, offset: Int): [ContentItem!]!
+
+    # Creator Analytics (CREATORS ONLY)
+    myCreatorAnalytics(timeRange: AnalyticsTimeRange): CreatorAnalytics!
+
+    # YouTube Integration (ADMIN/CREATORS)
+    youtubeSyncStatus(categoryId: ID): YouTubeSyncStatus!
+    youtubeSyncJobs(limit: Int): [YouTubeSyncJob!]!
+    youtubeQuotaUsage: YouTubeQuotaUsage!
+    youtubeCategoryMapping(categoryId: ID!): YouTubeCategoryMapping
   }
 
   type Mutation {
@@ -239,6 +248,15 @@ export const typeDefs = gql`
 
     # Record view
     recordContentView(contentItemId: ID!, viewDuration: Int, completed: Boolean): Boolean!
+
+    # YouTube Integration (ADMIN ONLY)
+    syncYouTubeCategory(categoryId: ID!, limit: Int): YouTubeSyncResult!
+    syncAllYouTubeCategories(limit: Int): [YouTubeSyncResult!]!
+    syncAllYouTubeCategoriesParallel(limit: Int, concurrency: Int): YouTubeParallelSyncResult!
+    importYouTubeVideo(videoId: String!, categoryId: ID!): Boolean!
+    updateYouTubeCategoryMapping(categoryId: ID!, keywords: [String!], channels: [String!]): YouTubeCategoryMapping!
+    blacklistYouTubeChannel(channelId: String!, reason: String!): Boolean!
+    blacklistYouTubeVideo(videoId: String!, reason: String!): Boolean!
   }
 
   type Subscription {
@@ -329,6 +347,7 @@ export const typeDefs = gql`
     category: ContentCategory!
     author: User!
     contentType: ContentType!
+    sourceType: ContentSource!
     difficultyLevel: DifficultyLevel!
     ageGroup: AgeGroup!
     tags: [String!]!
@@ -407,4 +426,126 @@ export const typeDefs = gql`
     mediaUrls: JSON
     videoId: ID
   }
+
+  # ====================================
+  # CREATOR ANALYTICS SYSTEM
+  # ====================================
+
+  enum AnalyticsTimeRange {
+    LAST_7_DAYS
+    LAST_30_DAYS
+    LAST_90_DAYS
+    ALL_TIME
+  }
+
+  type CreatorAnalytics {
+    totalContent: Int!
+    totalViews: Int!
+    totalUpvotes: Int!
+    totalBookmarks: Int!
+    totalShares: Int!
+    engagementRate: Float!
+    topContent: [ContentItem!]!
+    viewsOverTime: [TimeSeriesData!]!
+    engagementOverTime: [TimeSeriesData!]!
+    contentByCategory: [CategoryBreakdown!]!
+    audienceLevel: [AudienceLevelBreakdown!]!
+  }
+
+  type TimeSeriesData {
+    date: String!
+    value: Int!
+  }
+
+  type CategoryBreakdown {
+    category: ContentCategory!
+    contentCount: Int!
+    totalViews: Int!
+    totalEngagement: Int!
+  }
+
+  type AudienceLevelBreakdown {
+    level: DifficultyLevel!
+    count: Int!
+    percentage: Float!
+  }
+
+  # ====================================
+  # YOUTUBE INTEGRATION SYSTEM
+  # ====================================
+
+  type YouTubeSyncStatus {
+    categoryId: ID
+    categoryName: String
+    lastSyncAt: DateTime
+    hoursSinceSync: Float
+    videoCount: Int!
+    syncEnabled: Boolean!
+  }
+
+  type YouTubeSyncJob {
+    id: ID!
+    jobType: String!
+    categoryId: ID
+    categoryName: String
+    status: String!
+    videosFetched: Int!
+    videosImported: Int!
+    videosSkipped: Int!
+    videosFailed: Int!
+    quotaCost: Int!
+    durationSeconds: Int
+    errorMessage: String
+    startedAt: DateTime
+    completedAt: DateTime
+    createdAt: DateTime!
+  }
+
+  type YouTubeSyncResult {
+    jobId: ID!
+    categoryId: ID!
+    categoryName: String!
+    videosFetched: Int!
+    videosImported: Int!
+    videosSkipped: Int!
+    videosFailed: Int!
+    quotaCost: Int!
+    durationSeconds: Int!
+    errors: [String!]!
+  }
+
+  type YouTubeParallelSyncResult {
+    success: Boolean!
+    totalCategories: Int!
+    results: [YouTubeSyncResult!]!
+  }
+
+  type YouTubeQuotaUsage {
+    used: Int!
+    remaining: Int!
+    limit: Int!
+    date: String!
+  }
+
+  type YouTubeCategoryMapping {
+    id: ID!
+    categoryId: ID!
+    category: ContentCategory!
+    searchKeywords: [String!]!
+    channelIds: [String!]!
+    qualityThreshold: JSON!
+    syncEnabled: Boolean!
+    syncFrequency: String!
+    maxVideosPerSync: Int!
+    lastSyncAt: DateTime
+    createdAt: DateTime!
+    updatedAt: DateTime!
+  }
+
+  enum ContentSource {
+    NATIVE
+    YOUTUBE
+    EXTERNAL
+  }
 `;
+

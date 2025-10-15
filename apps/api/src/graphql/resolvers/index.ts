@@ -5,6 +5,8 @@ import { forumResolvers } from './forum';
 import { courseResolvers } from './course';
 import { subscriptionResolvers } from './subscription';
 import { contentResolvers } from './content';
+import { analyticsResolvers } from './analytics';
+import { youtubeResolvers } from './youtube';
 import { GraphQLScalarType, Kind } from 'graphql';
 
 const dateTimeScalar = new GraphQLScalarType({
@@ -53,6 +55,8 @@ export const resolvers = {
     ...forumResolvers.Query,
     ...courseResolvers.Query,
     ...contentResolvers.Query,
+    ...analyticsResolvers.Query,
+    ...youtubeResolvers.Query,
   },
   Mutation: {
     ...authResolvers.Mutation,
@@ -62,6 +66,7 @@ export const resolvers = {
     ...courseResolvers.Mutation,
     ...subscriptionResolvers.Mutation,
     ...contentResolvers.Mutation,
+    ...youtubeResolvers.Mutation,
   },
   User: userResolvers.User,
   Video: videoResolvers.Video,
@@ -70,4 +75,8 @@ export const resolvers = {
   ContentCategory: contentResolvers.ContentCategory,
   ContentItem: contentResolvers.ContentItem,
   UserAstronomyProfile: contentResolvers.UserAstronomyProfile,
+  CreatorAnalytics: analyticsResolvers.CreatorAnalytics,
+  YouTubeCategoryMapping: youtubeResolvers.YouTubeCategoryMapping,
+  YouTubeSyncJob: youtubeResolvers.YouTubeSyncJob,
+  YouTubeSyncStatus: youtubeResolvers.YouTubeSyncStatus,
 };

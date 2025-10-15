@@ -35,6 +35,7 @@ export const CONTENT_ITEM_FIELDS = gql`
     ageGroup
     tags
     mediaUrls
+    sourceType
     engagementScore
     viewCount
     upvotes

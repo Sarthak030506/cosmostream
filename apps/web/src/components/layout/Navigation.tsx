@@ -43,6 +43,12 @@ export function Navigation() {
             <Link href="/browse" className="text-sm hover:text-cosmos-400">
               Browse
             </Link>
+            <Link href="/discover" className="text-sm hover:text-cosmos-400">
+              Discover
+            </Link>
+            <Link href="/categories" className="text-sm hover:text-cosmos-400">
+              Categories
+            </Link>
             <Link href="/sky-map" className="text-sm hover:text-cosmos-400">
               Sky Map
             </Link>
@@ -146,6 +152,12 @@ export function Navigation() {
             <div className="flex flex-col space-y-4">
               <Link href="/browse" className="text-sm hover:text-cosmos-400">
                 Browse
+              </Link>
+              <Link href="/discover" className="text-sm hover:text-cosmos-400">
+                Discover
+              </Link>
+              <Link href="/categories" className="text-sm hover:text-cosmos-400">
+                Categories
               </Link>
               <Link href="/sky-map" className="text-sm hover:text-cosmos-400">
                 Sky Map

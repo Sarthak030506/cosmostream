@@ -14,6 +14,11 @@ import { resolvers } from './graphql/resolvers';
 import { createContext } from './context';
 import { logger } from './utils/logger';
 import { errorHandler } from './middleware/errorHandler';
+import { pool } from './db';
+import { initYouTubeService } from './services/youtube';
+import { initYouTubeSyncService } from './services/youtube-sync';
+import { initYouTubeContentFilter } from './utils/youtube-filters';
+import { initYouTubeSyncCronJob } from './jobs/youtube-sync-cron';
 
 const PORT = process.env.PORT || 4000;
 
@@ -81,6 +86,29 @@ async function startServer() {
 
   // Error handling
   app.use(errorHandler);
+
+  // Initialize YouTube services (if API key is configured)
+  if (process.env.YOUTUBE_API_KEY) {
+    try {
+      logger.info('Initializing YouTube integration services...');
+
+      // Initialize services
+      initYouTubeService(pool, logger);
+      initYouTubeContentFilter(logger);
+      initYouTubeSyncService(pool, logger);
+
+      // Initialize and start cron job for automated syncing
+      const cronJob = initYouTubeSyncCronJob(pool, logger);
+      cronJob.start();
+
+      logger.info('✅ YouTube integration services initialized successfully');
+    } catch (error) {
+      logger.error('Failed to initialize YouTube services:', error);
+      logger.warn('YouTube integration will be disabled');
+    }
+  } else {
+    logger.warn('YOUTUBE_API_KEY not set - YouTube integration disabled');
+  }
 
   app.listen(PORT, () => {
     logger.info(`🚀 Server ready at http://localhost:${PORT}/graphql`);

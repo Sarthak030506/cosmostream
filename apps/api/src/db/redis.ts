@@ -8,6 +8,10 @@ const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
     return delay;
   },
   maxRetriesPerRequest: 3,
+  // Enable TLS for production (Upstash requires it)
+  tls: process.env.NODE_ENV === 'production' ? {} : undefined,
+  // Add family option for better DNS resolution
+  family: 4,
 });
 
 redis.on('connect', () => {

@@ -10,6 +10,8 @@ import { ShareModal } from '@/components/content/ShareModal';
 import { RelatedContent } from '@/components/content/RelatedContent';
 import { TableOfContents } from '@/components/content/TableOfContents';
 import { AuthorCard } from '@/components/content/AuthorCard';
+import { YouTubeEmbed } from '@/components/content/YouTubeEmbed';
+import { YouTubeAttribution } from '@/components/content/YouTubeAttribution';
 import {
   GET_CONTENT_ITEM,
   VOTE_CONTENT,
@@ -290,7 +292,39 @@ export default function ContentDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Main Content Column */}
           <div className="lg:col-span-8">
-            <MarkdownRenderer content={content.bodyMarkdown || ''} />
+            {/* Render YouTube video if sourceType is YOUTUBE */}
+            {content.sourceType === 'YOUTUBE' && content.mediaUrls ? (
+              <div className="space-y-6">
+                <YouTubeEmbed
+                  mediaUrls={content.mediaUrls}
+                  title={content.title}
+                  description={content.description}
+                  viewCount={content.viewCount}
+                  upvotes={upvotes}
+                  isBookmarked={isBookmarked}
+                  onUpvote={() => handleVote(1)}
+                  onBookmark={handleBookmark}
+                  onShare={() => setIsShareModalOpen(true)}
+                />
+
+                {/* YouTube Attribution */}
+                <YouTubeAttribution
+                  channelName={content.mediaUrls.channel_name}
+                  channelId={content.mediaUrls.channel_id}
+                  publishedAt={content.mediaUrls.published_at}
+                  mode="full"
+                />
+
+                {/* Description if available */}
+                {content.description && (
+                  <div className="prose prose-invert max-w-none">
+                    <p className="text-gray-300 leading-relaxed">{content.description}</p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <MarkdownRenderer content={content.bodyMarkdown || ''} />
+            )}
 
             {/* Tags */}
             {content.tags && content.tags.length > 0 && (

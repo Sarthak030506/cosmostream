@@ -12,6 +12,8 @@ interface ContentCardProps {
     title: string;
     description?: string;
     contentType: string;
+    sourceType?: string;
+    mediaUrls?: any;
     difficultyLevel: string;
     ageGroup: string;
     tags: string[];
@@ -119,6 +121,23 @@ export function ContentCard({ content, onUpdate }: ContentCardProps) {
     }
   };
 
+  const formatDuration = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
+    if (hours > 0) {
+      return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    return `${minutes}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const isVideo = content.contentType.toLowerCase() === 'video';
+  const isYouTube = content.sourceType === 'YOUTUBE';
+  const thumbnail = content.mediaUrls?.thumbnail;
+  const duration = content.mediaUrls?.duration_seconds;
+  const channelName = content.mediaUrls?.channel_name;
+
   return (
     <Link
       href={`/content/${content.id}`}
@@ -131,9 +150,43 @@ export function ContentCard({ content, onUpdate }: ContentCardProps) {
             <span className="text-2xl">{content.category.iconEmoji || '📚'}</span>
             <span className="text-gray-300">{content.category.name}</span>
           </div>
-          <span className="text-2xl">{getContentTypeIcon(content.contentType)}</span>
+          <div className="flex items-center gap-2">
+            {isYouTube && (
+              <span className="px-2 py-0.5 bg-red-600 text-white text-xs font-semibold rounded flex items-center gap-1">
+                <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                </svg>
+                YouTube
+              </span>
+            )}
+            <span className="text-2xl">{getContentTypeIcon(content.contentType)}</span>
+          </div>
         </div>
       </div>
+
+      {/* Video Thumbnail (for video content) */}
+      {isVideo && thumbnail && (
+        <div className="relative aspect-video bg-gray-800 overflow-hidden">
+          <img
+            src={thumbnail}
+            alt={content.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+          {duration && (
+            <div className="absolute bottom-2 right-2 bg-black/90 text-white text-xs font-semibold px-2 py-1 rounded">
+              {formatDuration(duration)}
+            </div>
+          )}
+          {/* Play Button Overlay */}
+          <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition flex items-center justify-center">
+            <div className="w-16 h-16 bg-white/90 group-hover:bg-white rounded-full flex items-center justify-center transition">
+              <svg className="w-8 h-8 text-gray-900 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Content Body */}
       <div className="p-5">
@@ -173,7 +226,16 @@ export function ContentCard({ content, onUpdate }: ContentCardProps) {
         <div className="flex items-center justify-between pt-4 border-t border-gray-800">
           {/* Author & Stats */}
           <div className="flex items-center gap-4 text-sm text-gray-500">
-            <span className="text-gray-400">{content.author.name}</span>
+            {isYouTube && channelName ? (
+              <span className="text-gray-400 flex items-center gap-1">
+                <svg className="w-3 h-3 text-red-500" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                </svg>
+                {channelName}
+              </span>
+            ) : (
+              <span className="text-gray-400">{content.author.name}</span>
+            )}
             <span>{content.viewCount.toLocaleString()} views</span>
           </div>
 

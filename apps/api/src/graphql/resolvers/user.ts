@@ -142,7 +142,7 @@ export const userResolvers = {
     async creatorProfile(parent: any, _: any, { db }: Context) {
       const result = await db.query(
         `SELECT verified, approval_status, credentials,
-                (SELECT COUNT(*) FROM subscriptions WHERE creator_id = $1) as subscriber_count,
+                (SELECT COUNT(*) FROM creator_subscriptions WHERE creator_id = $1) as subscriber_count,
                 (SELECT COALESCE(SUM(views), 0) FROM videos WHERE creator_id = $1) as total_views
          FROM creator_profiles WHERE user_id = $1`,
         [parent.id]

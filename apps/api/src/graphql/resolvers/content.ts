@@ -230,6 +230,42 @@ export const contentResolvers = {
         params.push(filters.tags);
       }
 
+      // Get total count for pagination - build count query manually to match params
+      let countQuery = `SELECT COUNT(*) as total FROM content_items ci WHERE 1=1`;
+      let countParamNum = 1;
+
+      if (filters.categoryId) {
+        countQuery += ` AND ci.category_id = $${countParamNum++}`;
+      }
+      if (filters.categorySlug) {
+        countQuery += ` AND ci.category_id = (SELECT id FROM content_categories WHERE slug = $${countParamNum++})`;
+      }
+      if (filters.difficultyLevel) {
+        countQuery += ` AND ci.difficulty_level = $${countParamNum++}`;
+      }
+      if (filters.ageGroup) {
+        countQuery += ` AND ci.age_group = $${countParamNum++}`;
+      }
+      if (filters.contentType) {
+        countQuery += ` AND ci.content_type = $${countParamNum++}`;
+      }
+      if (filters.authorId) {
+        countQuery += ` AND ci.author_id = $${countParamNum++}`;
+      }
+      if (filters.tags && filters.tags.length > 0) {
+        countQuery += ` AND ci.tags && $${countParamNum++}::text[]`;
+      }
+
+      const countResult = await db.query(countQuery, params);
+      const totalCount = parseInt(countResult.rows[0].total);
+
+      // Replace user ID placeholder if user exists (BEFORE adding pagination)
+      if (user) {
+        query = query.replace(/\$999/g, `$${paramCount}`);
+        params.push(user.id); // Only push once since $999 is reused for both user_vote and is_bookmarked
+        paramCount += 1; // Increment by 1
+      }
+
       // Apply sorting
       switch (sortBy) {
         case 'TRENDING':
@@ -248,23 +284,9 @@ export const contentResolvers = {
           query += ` ORDER BY ci.created_at DESC`;
       }
 
-      // Get total count for pagination
-      const countQuery = query.replace(
-        /SELECT ci\.\*.*FROM/s,
-        'SELECT COUNT(*) as total FROM'
-      );
-      const countResult = await db.query(countQuery, params);
-      const totalCount = parseInt(countResult.rows[0].total);
-
       // Add pagination
       query += ` LIMIT $${paramCount++} OFFSET $${paramCount}`;
       params.push(limit, offset);
-
-      // Replace user ID placeholder if user exists
-      if (user) {
-        query = query.replace(/\$999/g, `$${paramCount++}`);
-        params.push(user.id, user.id);
-      }
 
       const result = await db.query(query, params);
 
@@ -973,6 +995,10 @@ export const contentResolvers = {
 
     contentType(parent: any) {
       return parent.content_type.toUpperCase();
+    },
+
+    sourceType(parent: any) {
+      return (parent.source_type || 'native').toUpperCase();
     },
 
     difficultyLevel(parent: any) {

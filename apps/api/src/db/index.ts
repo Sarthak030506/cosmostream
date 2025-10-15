@@ -63,3 +63,6 @@ export const db = {
 
   end: () => pool.end(),
 };
+
+// Export the pool for services that need direct access
+export { pool };
