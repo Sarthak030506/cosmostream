@@ -50,6 +50,9 @@ export const typeDefs = gql`
     thumbnailUrl: String
     manifestUrl: String
     duration: Int
+    fileSize: Int
+    processingProgress: Int
+    errorMessage: String
     tags: [String!]!
     category: String
     difficulty: String
@@ -57,6 +60,7 @@ export const typeDefs = gql`
     likes: Int!
     createdAt: DateTime!
     updatedAt: DateTime!
+    completedAt: DateTime
   }
 
   enum VideoStatus {
@@ -152,11 +156,26 @@ export const typeDefs = gql`
     videoId: ID!
   }
 
+  type VideoFeed {
+    items: [Video!]!
+    hasMore: Boolean!
+    totalCount: Int!
+  }
+
+  enum VideoFilterStatus {
+    ALL
+    UPLOADING
+    PROCESSING
+    READY
+    FAILED
+  }
+
   type Query {
     me: User
     user(id: ID!): User
     video(id: ID!): Video
     videos(limit: Int, offset: Int, category: String, tags: [String!]): [Video!]!
+    myVideos(status: VideoFilterStatus, limit: Int, offset: Int): VideoFeed!
     searchVideos(query: String!, limit: Int, offset: Int): [Video!]!
     thread(id: ID!): Thread
     threads(category: String, limit: Int, offset: Int): [Thread!]!
@@ -192,6 +211,10 @@ export const typeDefs = gql`
     youtubeSyncJobs(limit: Int): [YouTubeSyncJob!]!
     youtubeQuotaUsage: YouTubeQuotaUsage!
     youtubeCategoryMapping(categoryId: ID!): YouTubeCategoryMapping
+
+    # Video Analytics
+    videoAnalytics(videoId: ID!, timeRange: AnalyticsTimeRange): VideoAnalytics!
+    realtimeAnalytics(videoId: ID!): RealtimeAnalytics!
   }
 
   type Mutation {
@@ -205,8 +228,10 @@ export const typeDefs = gql`
     applyForCreator(credentials: String!): CreatorProfile!
 
     # Video
-    requestUploadUrl(title: String!, description: String, tags: [String!]): UploadUrl!
-    updateVideo(id: ID!, title: String, description: String, tags: [String!]): Video!
+    requestUploadUrl(title: String!, description: String, tags: [String!], category: String, difficulty: String): UploadUrl!
+    requestThumbnailUploadUrl(videoId: ID!): UploadUrl!
+    completeVideoUpload(videoId: ID!, fileSize: Int!): Video!
+    updateVideo(id: ID!, title: String, description: String, tags: [String!], category: String, difficulty: String, thumbnailUrl: String): Video!
     deleteVideo(id: ID!): Boolean!
 
     # Forum
@@ -257,6 +282,10 @@ export const typeDefs = gql`
     updateYouTubeCategoryMapping(categoryId: ID!, keywords: [String!], channels: [String!]): YouTubeCategoryMapping!
     blacklistYouTubeChannel(channelId: String!, reason: String!): Boolean!
     blacklistYouTubeVideo(videoId: String!, reason: String!): Boolean!
+
+    # Video Analytics Tracking
+    trackVideoView(input: VideoViewInput!): Boolean!
+    trackVideoEvent(input: VideoEventInput!): Boolean!
   }
 
   type Subscription {
@@ -546,6 +575,98 @@ export const typeDefs = gql`
     NATIVE
     YOUTUBE
     EXTERNAL
+  }
+
+  # ====================================
+  # VIDEO ANALYTICS SYSTEM
+  # ====================================
+
+  input VideoViewInput {
+    videoId: ID!
+    sessionId: String!
+    userId: ID
+    deviceType: String
+    browser: String
+    operatingSystem: String
+    screenResolution: String
+    trafficSource: String
+    referrerUrl: String
+    utmSource: String
+    utmMedium: String
+    utmCampaign: String
+    userAgent: String
+  }
+
+  input VideoEventInput {
+    videoId: ID!
+    sessionId: String!
+    userId: ID
+    eventType: String!
+    videoTimestamp: Int!
+    eventData: JSON
+  }
+
+  type VideoAnalytics {
+    videoId: ID!
+    totalViews: Int!
+    uniqueViews: Int!
+    watchTime: Int!
+    avgViewDuration: Float!
+    completionRate: Float!
+    retentionCurve: [RetentionPoint!]!
+    trafficSources: [TrafficSource!]!
+    deviceStats: DeviceStats!
+    viewsByDate: [TimeSeriesData!]!
+    topCountries: [GeographicStat!]!
+  }
+
+  type RetentionPoint {
+    timestamp: Int!
+    viewerPercentage: Float!
+    viewerCount: Int!
+    dropOffCount: Int!
+  }
+
+  type TrafficSource {
+    source: String!
+    views: Int!
+    uniqueViewers: Int!
+    percentage: Float!
+    avgCompletion: Float!
+  }
+
+  type DeviceStats {
+    desktop: Int!
+    mobile: Int!
+    tablet: Int!
+    browsers: [BrowserStat!]!
+    operatingSystems: [OSStat!]!
+  }
+
+  type BrowserStat {
+    browser: String!
+    count: Int!
+    percentage: Float!
+  }
+
+  type OSStat {
+    os: String!
+    count: Int!
+    percentage: Float!
+  }
+
+  type GeographicStat {
+    country: String!
+    views: Int!
+    percentage: Float!
+  }
+
+  type RealtimeAnalytics {
+    videoId: ID!
+    currentViewers: Int!
+    viewsLast24h: Int!
+    viewsLastHour: Int!
+    avgCompletionLast24h: Float!
   }
 `;
 

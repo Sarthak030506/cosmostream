@@ -8,8 +8,9 @@ export const videoResolvers = {
     async video(_: any, { id }: any, { db }: Context) {
       const result = await db.query(
         `SELECT id, title, description, creator_id, status, thumbnail_url,
-                manifest_url, duration, tags, category, difficulty, views, likes,
-                created_at, updated_at
+                manifest_url, duration, file_size, processing_progress, error_message,
+                tags, category, difficulty, views, likes,
+                created_at, updated_at, completed_at
          FROM videos WHERE id = $1`,
         [id]
       );
@@ -19,6 +20,58 @@ export const videoResolvers = {
       }
 
       return result.rows[0];
+    },
+
+    async myVideos(
+      _: any,
+      { status = 'ALL', limit = 20, offset = 0 }: any,
+      { user, db }: Context
+    ) {
+      if (!user) {
+        throw new GraphQLError('Not authenticated', {
+          extensions: { code: 'UNAUTHENTICATED' },
+        });
+      }
+
+      // Build query based on status filter
+      let query = `
+        SELECT id, title, description, creator_id, status, thumbnail_url,
+               manifest_url, duration, file_size, processing_progress, error_message,
+               tags, category, difficulty, views, likes,
+               created_at, updated_at, completed_at
+        FROM videos
+        WHERE creator_id = $1
+      `;
+      const params: any[] = [user.id];
+      let paramCount = 2;
+
+      if (status !== 'ALL') {
+        query += ` AND status = $${paramCount++}`;
+        params.push(status.toLowerCase());
+      }
+
+      // Get total count
+      let countQuery = `SELECT COUNT(*) FROM videos WHERE creator_id = $1`;
+      const countParams: any[] = [user.id];
+      if (status !== 'ALL') {
+        countQuery += ` AND status = $2`;
+        countParams.push(status.toLowerCase());
+      }
+
+      const countResult = await db.query(countQuery, countParams);
+      const totalCount = parseInt(countResult.rows[0].count);
+
+      // Get paginated results
+      query += ` ORDER BY created_at DESC LIMIT $${paramCount++} OFFSET $${paramCount}`;
+      params.push(limit, offset);
+
+      const result = await db.query(query, params);
+
+      return {
+        items: result.rows,
+        hasMore: offset + result.rows.length < totalCount,
+        totalCount,
+      };
     },
 
     async videos(
@@ -78,7 +131,7 @@ export const videoResolvers = {
   Mutation: {
     async requestUploadUrl(
       _: any,
-      { title, description, tags }: any,
+      { title, description, tags, category, difficulty }: any,
       { user, db }: Context
     ) {
       if (!user) {
@@ -105,14 +158,14 @@ export const videoResolvers = {
       const videoId = uuidv4();
       const key = `uploads/${user.id}/${videoId}/original.mp4`;
 
-      // Generate presigned URL
-      const uploadUrl = await generatePresignedUploadUrl(key);
+      // Generate presigned URL (1 hour expiry)
+      const uploadUrl = await generatePresignedUploadUrl(key, 3600);
 
       // Create video record
       await db.query(
-        `INSERT INTO videos (id, title, description, creator_id, status, tags, s3_key)
-         VALUES ($1, $2, $3, $4, 'uploading', $5, $6)`,
-        [videoId, title, description || '', user.id, tags || [], key]
+        `INSERT INTO videos (id, title, description, creator_id, status, tags, category, difficulty, s3_key)
+         VALUES ($1, $2, $3, $4, 'uploading', $5, $6, $7, $8)`,
+        [videoId, title, description || '', user.id, tags || [], category, difficulty, key]
       );
 
       return {
@@ -121,9 +174,100 @@ export const videoResolvers = {
       };
     },
 
+    async requestThumbnailUploadUrl(
+      _: any,
+      { videoId }: any,
+      { user, db }: Context
+    ) {
+      if (!user) {
+        throw new GraphQLError('Not authenticated', {
+          extensions: { code: 'UNAUTHENTICATED' },
+        });
+      }
+
+      // Check ownership
+      const videoCheck = await db.query(
+        'SELECT creator_id FROM videos WHERE id = $1',
+        [videoId]
+      );
+
+      if (videoCheck.rows.length === 0) {
+        throw new GraphQLError('Video not found', {
+          extensions: { code: 'NOT_FOUND' },
+        });
+      }
+
+      if (videoCheck.rows[0].creator_id !== user.id && user.role !== 'admin') {
+        throw new GraphQLError('Not authorized', {
+          extensions: { code: 'FORBIDDEN' },
+        });
+      }
+
+      const key = `thumbnails/${user.id}/${videoId}/custom-thumbnail.jpg`;
+      const uploadUrl = await generatePresignedUploadUrl(key, 1800, 'image/jpeg');
+
+      return {
+        uploadUrl,
+        videoId,
+      };
+    },
+
+    async completeVideoUpload(
+      _: any,
+      { videoId, fileSize }: any,
+      { user, db }: Context
+    ) {
+      if (!user) {
+        throw new GraphQLError('Not authenticated', {
+          extensions: { code: 'UNAUTHENTICATED' },
+        });
+      }
+
+      // Check ownership
+      const videoCheck = await db.query(
+        'SELECT creator_id, s3_key FROM videos WHERE id = $1',
+        [videoId]
+      );
+
+      if (videoCheck.rows.length === 0) {
+        throw new GraphQLError('Video not found', {
+          extensions: { code: 'NOT_FOUND' },
+        });
+      }
+
+      if (videoCheck.rows[0].creator_id !== user.id) {
+        throw new GraphQLError('Not authorized', {
+          extensions: { code: 'FORBIDDEN' },
+        });
+      }
+
+      // Update video with file size and mark as ready for processing
+      await db.query(
+        `UPDATE videos
+         SET file_size = $1, status = 'processing', processing_progress = 0, updated_at = NOW()
+         WHERE id = $2`,
+        [fileSize, videoId]
+      );
+
+      // TODO: Add video to processing queue
+      // This will be implemented when we enhance the media processor
+
+      // Return updated video
+      const result = await db.query(
+        `SELECT id, title, description, creator_id, status, thumbnail_url,
+                manifest_url, duration, file_size, processing_progress, error_message,
+                tags, category, difficulty, views, likes,
+                created_at, updated_at, completed_at
+         FROM videos WHERE id = $1`,
+        [videoId]
+      );
+
+      return result.rows[0];
+    },
+
     async updateVideo(
       _: any,
-      { id, title, description, tags }: any,
+      { id, title, description, tags, category, difficulty, thumbnailUrl }: any,
       { user, db }: Context
     ) {
       if (!user) {
@@ -166,6 +310,18 @@ export const videoResolvers = {
         updates.push(`tags = $${paramCount++}`);
         values.push(tags);
       }
+      if (category) {
+        updates.push(`category = $${paramCount++}`);
+        values.push(category);
+      }
+      if (difficulty) {
+        updates.push(`difficulty = $${paramCount++}`);
+        values.push(difficulty);
+      }
+      if (thumbnailUrl) {
+        updates.push(`thumbnail_url = $${paramCount++}`);
+        values.push(thumbnailUrl);
+      }
 
       updates.push(`updated_at = NOW()`);
       values.push(id);
@@ -177,8 +333,9 @@ export const videoResolvers = {
 
       const result = await db.query(
         `SELECT id, title, description, creator_id, status, thumbnail_url,
-                manifest_url, duration, tags, category, difficulty, views, likes,
-                created_at, updated_at
+                manifest_url, duration, file_size, processing_progress, error_message,
+                tags, category, difficulty, views, likes,
+                created_at, updated_at, completed_at
          FROM videos WHERE id = $1`,
         [id]
       );
@@ -222,13 +379,15 @@ export const videoResolvers = {
     },
 
     createdAt(parent: any) {
-      // Map snake_case to camelCase
       return parent.created_at;
     },
 
     updatedAt(parent: any) {
-      // Map snake_case to camelCase
       return parent.updated_at;
+    },
+
+    completedAt(parent: any) {
+      return parent.completed_at;
     },
 
     thumbnailUrl(parent: any) {
@@ -237,6 +396,18 @@ export const videoResolvers = {
 
     manifestUrl(parent: any) {
       return parent.manifest_url;
+    },
+
+    fileSize(parent: any) {
+      return parent.file_size;
+    },
+
+    processingProgress(parent: any) {
+      return parent.processing_progress;
+    },
+
+    errorMessage(parent: any) {
+      return parent.error_message;
     },
 
     async creator(parent: any, _: any, { db }: Context) {

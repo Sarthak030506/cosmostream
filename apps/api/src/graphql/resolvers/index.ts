@@ -7,6 +7,7 @@ import { subscriptionResolvers } from './subscription';
 import { contentResolvers } from './content';
 import { analyticsResolvers } from './analytics';
 import { youtubeResolvers } from './youtube';
+import { videoAnalyticsResolvers } from './video-analytics';
 import { GraphQLScalarType, Kind } from 'graphql';
 
 const dateTimeScalar = new GraphQLScalarType({
@@ -57,6 +58,7 @@ export const resolvers = {
     ...contentResolvers.Query,
     ...analyticsResolvers.Query,
     ...youtubeResolvers.Query,
+    ...videoAnalyticsResolvers.Query,
   },
   Mutation: {
     ...authResolvers.Mutation,
@@ -67,6 +69,7 @@ export const resolvers = {
     ...subscriptionResolvers.Mutation,
     ...contentResolvers.Mutation,
     ...youtubeResolvers.Mutation,
+    ...videoAnalyticsResolvers.Mutation,
   },
   User: userResolvers.User,
   Video: videoResolvers.Video,
@@ -79,4 +82,5 @@ export const resolvers = {
   YouTubeCategoryMapping: youtubeResolvers.YouTubeCategoryMapping,
   YouTubeSyncJob: youtubeResolvers.YouTubeSyncJob,
   YouTubeSyncStatus: youtubeResolvers.YouTubeSyncStatus,
+  VideoAnalytics: videoAnalyticsResolvers.VideoAnalytics,
 };
