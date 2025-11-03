@@ -1,6 +1,17 @@
+'use client';
+
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 
 export function Hero() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Check if user is logged in
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
+  }, []);
+
   return (
     <section className="relative min-h-screen overflow-hidden py-20 sm:py-32">
       {/* Content */}
@@ -17,7 +28,10 @@ export function Hero() {
             sky maps, track live missions, and learn from expert creators.
           </p>
           <div className="mt-10 flex items-center justify-center gap-x-6">
-            <Link href="/signup" className="btn-primary text-base px-6 py-3">
+            <Link
+              href={isLoggedIn ? "/discover" : "/signup"}
+              className="btn-primary text-base px-6 py-3"
+            >
               Start Exploring
             </Link>
             <Link

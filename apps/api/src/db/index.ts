@@ -42,23 +42,7 @@ export const db = {
   },
 
   getClient: async () => {
-    const client = await pool.connect();
-    const query = client.query;
-    const release = client.release;
-
-    // Monkey patch to track queries
-    client.query = (...args: any[]) => {
-      client.lastQuery = args;
-      return query.apply(client, args as any);
-    };
-
-    client.release = () => {
-      client.query = query;
-      client.release = release;
-      return release.apply(client);
-    };
-
-    return client;
+    return pool.connect();
   },
 
   end: () => pool.end(),

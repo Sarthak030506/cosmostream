@@ -127,7 +127,7 @@ class YouTubeSyncService {
       );
 
       this.logger.info(
-        `Fetched ${allVideos.length} videos, ${qualityVideos.length} passed quality filters`
+        `Fetched ${allVideos.length} videos, ${qualityVideos.length} passed quality filters, ${failedVideos.length} filtered out`
       );
 
       // Sort by engagement and limit
@@ -421,7 +421,7 @@ class YouTubeSyncService {
       const descriptions: string[] = [];
       const categoryIds: string[] = [];
       const authorIds: string[] = [];
-      const tagArrays: string[][] = [];
+      const tagArrays: any[] = [];
       const mediaUrlsJsons: string[] = [];
       const viewCounts: number[] = [];
       const engagementScores: number[] = [];
@@ -444,7 +444,8 @@ class YouTubeSyncService {
         descriptions.push(video.description.substring(0, 1000));
         categoryIds.push(categoryId);
         authorIds.push(authorId);
-        tagArrays.push(tags);
+        // Convert array to PostgreSQL format: ARRAY['tag1', 'tag2']
+        tagArrays.push(`{${tags.map(t => `"${t.replace(/"/g, '\\"')}"`).join(',')}}`);
         mediaUrlsJsons.push(JSON.stringify(mediaUrls));
         viewCounts.push(video.viewCount);
         engagementScores.push(Math.floor(video.viewCount / 100));
@@ -462,7 +463,7 @@ class YouTubeSyncService {
           unnest($2::text[]),
           unnest($3::uuid[]),
           unnest($4::uuid[]),
-          unnest($5::text[][]),
+          unnest($5::text[])::text[],
           unnest($6::jsonb[]),
           'youtube',
           'video',

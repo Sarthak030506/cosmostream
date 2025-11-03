@@ -30,7 +30,21 @@
       "Bash(timeout:*)",
       "Bash(npm run dev)",
       "Bash(netstat:*)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\15\\bin\\psql.exe\" -U postgres -d cosmostream -f \"C:\\Users\\hp\\Desktop\\CosmoStream\\database\\migrations\\add_password_reset_tokens.sql\")",
+      "Read(//c/Program Files/**)",
+      "Bash(npx next build)",
+      "Bash(npx tsc --noEmit src/graphql/resolvers/admin.ts)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\15\\bin\\psql.exe\" -U postgres -d cosmostream -c \"UPDATE users SET role = ''viewer'' WHERE role = ''admin'';\")",
+      "Bash(npx tsc --noEmit src/services/spaceflight-news.ts src/services/news-sync.ts src/jobs/news-sync-cron.ts src/graphql/resolvers/news.ts)",
+      "Bash(npx ts-node scripts/sync-news-now.ts)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\15\\bin\\psql.exe\" -U postgres -d cosmostream -c \"SELECT COUNT(*) as total_news FROM content_items WHERE content_type = ''news'';\")",
+      "Bash(npx ts-node scripts/bulk-youtube-sync.ts --all --limit 100 --parallel 5)",
+      "Bash(npx ts-node scripts/bulk-youtube-sync.ts --all --limit 20 --parallel 3)",
+      "Bash(TS_NODE_TRANSPILE_ONLY=true npx ts-node scripts/bulk-youtube-sync.ts --all --limit 20 --parallel 3)",
+      "Bash(tree:*)",
+      "Bash(dir /S C:UsershpDesktopCosmoStreammagicuidesign-blog-template-bc0cb81)",
+      "Bash(npx tsc:*)"
     ],
     "deny": [],
     "ask": []

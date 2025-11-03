@@ -2,6 +2,7 @@ import { Context } from '../../context';
 import { GraphQLError } from 'graphql';
 import { generatePresignedUploadUrl } from '../../services/s3';
 import { v4 as uuidv4 } from 'uuid';
+import { addVideoToProcessingQueue } from '../../services/video-queue';
 
 export const videoResolvers = {
   Query: {
@@ -140,21 +141,7 @@ export const videoResolvers = {
         });
       }
 
-      // Check if user is a creator
-      const creatorCheck = await db.query(
-        `SELECT approval_status FROM creator_profiles WHERE user_id = $1`,
-        [user.id]
-      );
-
-      if (
-        creatorCheck.rows.length === 0 ||
-        creatorCheck.rows[0].approval_status !== 'approved'
-      ) {
-        throw new GraphQLError('Not authorized as creator', {
-          extensions: { code: 'FORBIDDEN' },
-        });
-      }
-
+      // All authenticated users can upload videos
       const videoId = uuidv4();
       const key = `uploads/${user.id}/${videoId}/original.mp4`;
 
@@ -249,8 +236,12 @@ export const videoResolvers = {
         [fileSize, videoId]
       );
 
-      // TODO: Add video to processing queue
-      // This will be implemented when we enhance the media processor
+      // Add video to processing queue
+      await addVideoToProcessingQueue({
+        videoId: videoId,
+        s3Key: videoCheck.rows[0].s3_key,
+        priority: 10,
+      });
 
       // Return updated video
       const result = await db.query(

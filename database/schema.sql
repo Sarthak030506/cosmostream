@@ -9,7 +9,7 @@ CREATE TABLE users (
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     name VARCHAR(255) NOT NULL,
-    role VARCHAR(50) NOT NULL DEFAULT 'viewer',
+    role VARCHAR(50) NOT NULL DEFAULT 'creator',
     oauth_providers JSONB DEFAULT '[]'::jsonb,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -17,6 +17,20 @@ CREATE TABLE users (
 
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_role ON users(role);
+
+-- Password reset tokens
+CREATE TABLE password_reset_tokens (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    token VARCHAR(255) UNIQUE NOT NULL,
+    expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    used BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_reset_token ON password_reset_tokens(token);
+CREATE INDEX idx_reset_user_id ON password_reset_tokens(user_id);
+CREATE INDEX idx_reset_expires ON password_reset_tokens(expires_at);
 
 -- User profiles
 CREATE TABLE user_profiles (

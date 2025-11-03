@@ -8,6 +8,8 @@ import { contentResolvers } from './content';
 import { analyticsResolvers } from './analytics';
 import { youtubeResolvers } from './youtube';
 import { videoAnalyticsResolvers } from './video-analytics';
+import { adminResolvers } from './admin';
+import { newsResolvers } from './news';
 import { GraphQLScalarType, Kind } from 'graphql';
 
 const dateTimeScalar = new GraphQLScalarType({
@@ -59,6 +61,8 @@ export const resolvers = {
     ...analyticsResolvers.Query,
     ...youtubeResolvers.Query,
     ...videoAnalyticsResolvers.Query,
+    ...adminResolvers.Query,
+    ...newsResolvers.Query,
   },
   Mutation: {
     ...authResolvers.Mutation,
@@ -70,6 +74,7 @@ export const resolvers = {
     ...contentResolvers.Mutation,
     ...youtubeResolvers.Mutation,
     ...videoAnalyticsResolvers.Mutation,
+    ...adminResolvers.Mutation,
   },
   User: userResolvers.User,
   Video: videoResolvers.Video,

@@ -134,12 +134,12 @@ export default function AnalyticsPage() {
     <div className="min-h-screen bg-gray-950">
       <Navigation />
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
           <div>
-            <h1 className="text-4xl font-bold text-white mb-2">Creator Analytics</h1>
-            <p className="text-gray-400">
+            <h1 className="text-2xl xs:text-3xl sm:text-4xl font-bold text-white mb-2">Creator Analytics</h1>
+            <p className="text-sm sm:text-base text-gray-400">
               Track your content performance and audience engagement
             </p>
           </div>
@@ -148,7 +148,7 @@ export default function AnalyticsPage() {
           <select
             value={timeRange}
             onChange={(e) => setTimeRange(e.target.value as TimeRange)}
-            className="bg-gray-800 text-gray-300 px-4 py-2 rounded-lg border border-gray-700 focus:border-cosmos-500 focus:outline-none"
+            className="bg-gray-800 text-gray-300 px-3 sm:px-4 py-2.5 rounded-lg border border-gray-700 focus:border-cosmos-500 focus:outline-none text-sm sm:text-base min-h-touch"
           >
             {timeRangeOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -161,7 +161,7 @@ export default function AnalyticsPage() {
         {analytics ? (
           <>
             {/* Metrics Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+            <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 xs:gap-4 mb-6 sm:mb-8">
               <MetricsCard
                 title="Total Content"
                 value={analytics.totalContent}
@@ -241,7 +241,7 @@ export default function AnalyticsPage() {
             </div>
 
             {/* Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
               <EngagementChart
                 data={analytics.viewsOverTime}
                 title="Views Over Time"

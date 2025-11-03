@@ -2,18 +2,22 @@
 
 BEGIN;
 
--- Insert test users
--- Password for all test users: password123
-INSERT INTO users (id, email, password_hash, name, role) VALUES
-    ('00000000-0000-0000-0000-000000000001', 'admin@cosmostream.com', '$2b$10$HOd7SaWxLSSC78b7unV/o.FK/d7fh.47o23RZXzv5n9OBYU9tTo/6', 'Admin User', 'admin'),
-    ('00000000-0000-0000-0000-000000000002', 'creator@cosmostream.com', '$2b$10$HOd7SaWxLSSC78b7unV/o.FK/d7fh.47o23RZXzv5n9OBYU9tTo/6', 'Dr. Jane Smith', 'creator'),
-    ('00000000-0000-0000-0000-000000000003', 'viewer@cosmostream.com', '$2b$10$HOd7SaWxLSSC78b7unV/o.FK/d7fh.47o23RZXzv5n9OBYU9tTo/6', 'John Doe', 'viewer')
-ON CONFLICT DO NOTHING;
+-- DEMO USERS REMOVED FOR PRODUCTION
+-- Users should sign up through the application using email/password or Google OAuth
+-- If you need test users for development, uncomment the lines below:
 
--- Insert creator profile
-INSERT INTO creator_profiles (user_id, verified, approval_status, credentials) VALUES
-    ('00000000-0000-0000-0000-000000000002', true, 'approved', 'PhD in Astrophysics, MIT')
-ON CONFLICT DO NOTHING;
+-- -- Insert test users
+-- -- Password for all test users: password123
+-- INSERT INTO users (id, email, password_hash, name, role) VALUES
+--     ('00000000-0000-0000-0000-000000000001', 'admin@cosmostream.com', '$2b$10$HOd7SaWxLSSC78b7unV/o.FK/d7fh.47o23RZXzv5n9OBYU9tTo/6', 'Admin User', 'admin'),
+--     ('00000000-0000-0000-0000-000000000002', 'creator@cosmostream.com', '$2b$10$HOd7SaWxLSSC78b7unV/o.FK/d7fh.47o23RZXzv5n9OBYU9tTo/6', 'Dr. Jane Smith', 'creator'),
+--     ('00000000-0000-0000-0000-000000000003', 'viewer@cosmostream.com', '$2b$10$HOd7SaWxLSSC78b7unV/o.FK/d7fh.47o23RZXzv5n9OBYU9tTo/6', 'John Doe', 'viewer')
+-- ON CONFLICT DO NOTHING;
+
+-- -- Insert creator profile
+-- INSERT INTO creator_profiles (user_id, verified, approval_status, credentials) VALUES
+--     ('00000000-0000-0000-0000-000000000002', true, 'approved', 'PhD in Astrophysics, MIT')
+-- ON CONFLICT DO NOTHING;
 
 -- Insert test videos
 INSERT INTO videos (id, title, description, creator_id, status, category, difficulty, tags) VALUES

@@ -55,8 +55,8 @@ export function Navigation() {
             <Link href="/missions" className="text-sm hover:text-cosmos-400">
               Live Missions
             </Link>
-            <Link href="/learn" className="text-sm hover:text-cosmos-400">
-              Learn
+            <Link href="/news" className="text-sm hover:text-cosmos-400">
+              News
             </Link>
             <Link href="/forums" className="text-sm hover:text-cosmos-400">
               Forums
@@ -67,23 +67,21 @@ export function Navigation() {
           <div className="hidden items-center space-x-4 md:flex">
             {user ? (
               <>
-                {/* Upload Button (Creators only) */}
-                {user.role === 'CREATOR' && (
-                  <Link
-                    href="/upload"
-                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cosmos-600 to-nebula-600 hover:from-cosmos-500 hover:to-nebula-500 text-white text-sm font-semibold rounded-lg transition"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                      />
-                    </svg>
-                    Upload
-                  </Link>
-                )}
+                {/* Upload Button (Everyone) */}
+                <Link
+                  href="/upload"
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cosmos-600 to-nebula-600 hover:from-cosmos-500 hover:to-nebula-500 text-white text-sm font-semibold rounded-lg transition"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                    />
+                  </svg>
+                  Upload
+                </Link>
 
                 <div className="relative">
                   <button
@@ -104,16 +102,25 @@ export function Navigation() {
                       <Link href="/profile" className="block px-4 py-2 text-sm hover:bg-gray-800 transition">
                         Profile
                       </Link>
-                      {user.role === 'CREATOR' && (
+                      <Link href="/dashboard/videos" className="block px-4 py-2 text-sm hover:bg-gray-800 transition">
+                        My Videos
+                      </Link>
+                      <Link href="/analytics" className="block px-4 py-2 text-sm hover:bg-gray-800 transition">
+                        Analytics
+                      </Link>
+                      {(user.role === 'ADMIN' || user.role === 'admin') && (
                         <>
-                          <Link href="/dashboard/videos" className="block px-4 py-2 text-sm hover:bg-gray-800 transition">
-                            My Videos
+                          <hr className="my-2 border-gray-800" />
+                          <div className="px-4 py-1 text-xs text-purple-400 font-semibold uppercase">Admin</div>
+                          <Link href="/admin/users" className="block px-4 py-2 text-sm text-purple-400 hover:bg-gray-800 transition">
+                            User Management
                           </Link>
-                          <Link href="/analytics" className="block px-4 py-2 text-sm hover:bg-gray-800 transition">
-                            Analytics
+                          <Link href="/admin/youtube-sync" className="block px-4 py-2 text-sm text-purple-400 hover:bg-gray-800 transition">
+                            YouTube Sync
                           </Link>
                         </>
                       )}
+                      <hr className="my-2 border-gray-800" />
                       <Link href="/settings" className="block px-4 py-2 text-sm hover:bg-gray-800 transition">
                         Settings
                       </Link>
@@ -190,8 +197,8 @@ export function Navigation() {
               <Link href="/missions" className="text-sm hover:text-cosmos-400">
                 Live Missions
               </Link>
-              <Link href="/learn" className="text-sm hover:text-cosmos-400">
-                Learn
+              <Link href="/news" className="text-sm hover:text-cosmos-400">
+                News
               </Link>
               <Link href="/forums" className="text-sm hover:text-cosmos-400">
                 Forums

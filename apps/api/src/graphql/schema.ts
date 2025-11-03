@@ -151,6 +151,11 @@ export const typeDefs = gql`
     user: User!
   }
 
+  type PasswordResetResponse {
+    success: Boolean!
+    message: String!
+  }
+
   type UploadUrl {
     uploadUrl: String!
     videoId: ID!
@@ -158,6 +163,12 @@ export const typeDefs = gql`
 
   type VideoFeed {
     items: [Video!]!
+    hasMore: Boolean!
+    totalCount: Int!
+  }
+
+  type UserFeed {
+    items: [User!]!
     hasMore: Boolean!
     totalCount: Int!
   }
@@ -215,6 +226,15 @@ export const typeDefs = gql`
     # Video Analytics
     videoAnalytics(videoId: ID!, timeRange: AnalyticsTimeRange): VideoAnalytics!
     realtimeAnalytics(videoId: ID!): RealtimeAnalytics!
+
+    # Admin Queries (ADMIN ONLY)
+    users(search: String, limit: Int, offset: Int): UserFeed!
+
+    # News Queries
+    latestNews(limit: Int, offset: Int): ContentFeed!
+    featuredNews: ContentItem
+    newsByCategory(categorySlug: String!, limit: Int, offset: Int): ContentFeed!
+    searchNews(query: String!, limit: Int, offset: Int): ContentFeed!
   }
 
   type Mutation {
@@ -222,6 +242,8 @@ export const typeDefs = gql`
     signup(email: String!, password: String!, name: String!): AuthPayload!
     login(email: String!, password: String!): AuthPayload!
     refreshToken(refreshToken: String!): AuthPayload!
+    requestPasswordReset(email: String!): PasswordResetResponse!
+    resetPassword(token: String!, newPassword: String!): PasswordResetResponse!
 
     # User
     updateProfile(name: String, bio: String, avatar: String): User!
@@ -286,6 +308,10 @@ export const typeDefs = gql`
     # Video Analytics Tracking
     trackVideoView(input: VideoViewInput!): Boolean!
     trackVideoEvent(input: VideoEventInput!): Boolean!
+
+    # Admin Mutations (ADMIN ONLY)
+    updateUserRole(userId: ID!, role: Role!): User!
+    deleteUser(userId: ID!): Boolean!
   }
 
   type Subscription {
@@ -377,6 +403,7 @@ export const typeDefs = gql`
     author: User!
     contentType: ContentType!
     sourceType: ContentSource!
+    sourceUrl: String
     difficultyLevel: DifficultyLevel!
     ageGroup: AgeGroup!
     tags: [String!]!
@@ -390,6 +417,7 @@ export const typeDefs = gql`
     bookmarkCount: Int!
     userVote: Int
     isBookmarked: Boolean
+    publishedAt: DateTime
     createdAt: DateTime!
     updatedAt: DateTime!
   }

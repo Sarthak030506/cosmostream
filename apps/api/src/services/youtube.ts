@@ -92,6 +92,14 @@ class YouTubeService {
    * Check if we have enough quota remaining for an operation
    */
   private async checkQuota(cost: number): Promise<boolean> {
+    // Ensure today's quota record exists (auto-reset daily)
+    await this.db.query(
+      `INSERT INTO youtube_api_quota (date, quota_used, quota_limit)
+       VALUES (CURRENT_DATE, 0, $1)
+       ON CONFLICT (date) DO NOTHING`,
+      [this.quotaLimit]
+    );
+
     const result = await this.db.query(
       'SELECT get_youtube_quota_remaining() as remaining'
     );
@@ -300,8 +308,8 @@ class YouTubeService {
               default: snippet.thumbnails?.default?.url || '',
               medium: snippet.thumbnails?.medium?.url || '',
               high: snippet.thumbnails?.high?.url || '',
-              standard: snippet.thumbnails?.standard?.url,
-              maxres: snippet.thumbnails?.maxres?.url,
+              standard: snippet.thumbnails?.standard?.url || undefined,
+              maxres: snippet.thumbnails?.maxres?.url || undefined,
             },
             channelId: snippet.channelId || '',
             channelTitle: snippet.channelTitle || '',

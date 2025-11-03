@@ -13,9 +13,6 @@ const GET_ME = gql`
     me {
       id
       role
-      creatorProfile {
-        approvalStatus
-      }
     }
   }
 `;
@@ -51,9 +48,6 @@ export default function UploadPage() {
       return;
     }
   }, [router]);
-
-  // Check if user is an approved creator
-  const isApprovedCreator = userData?.me?.creatorProfile?.approvalStatus === 'APPROVED';
 
   const handleChange = (field: string, value: string) => {
     setFormData({ ...formData, [field]: value });
@@ -107,38 +101,6 @@ export default function UploadPage() {
     return null; // Will redirect via useEffect
   }
 
-  if (!isApprovedCreator) {
-    return (
-      <div className="min-h-screen bg-gray-950">
-        <Navigation />
-        <div className="container mx-auto px-4 py-16 max-w-2xl">
-          <div className="bg-gray-900/50 border border-gray-800 rounded-xl p-8 text-center">
-            <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-yellow-500/20 flex items-center justify-center">
-              <svg className="w-8 h-8 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                />
-              </svg>
-            </div>
-            <h2 className="text-2xl font-bold text-white mb-4">Creator Approval Required</h2>
-            <p className="text-gray-400 mb-6">
-              You need to be an approved creator to upload videos. Please apply for creator status first.
-            </p>
-            <button
-              onClick={() => router.push('/settings')}
-              className="bg-cosmos-600 hover:bg-cosmos-500 text-white px-6 py-3 rounded-lg transition"
-            >
-              Apply for Creator Status
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gray-950">
       <Navigation />
@@ -148,7 +110,7 @@ export default function UploadPage() {
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">Upload Video</h1>
           <p className="text-gray-400">
-            Share your astronomy and space content with the community
+            Share your astronomy and space content with the CosmoStream community. All users can upload!
           </p>
         </div>
 

@@ -155,13 +155,13 @@ export default function ContentDetailPage() {
 
       {/* Hero Section */}
       <div className="border-b border-gray-800 bg-gradient-to-b from-gray-900/50 to-gray-950">
-        <div className="container mx-auto px-4 py-12">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
+          <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-gray-400 mb-4 sm:mb-6">
             <Link href="/discover" className="hover:text-white transition">
               Discover
             </Link>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
             <Link
@@ -169,88 +169,91 @@ export default function ContentDetailPage() {
               className="hover:text-white transition flex items-center gap-1"
             >
               <span>{content.category.iconEmoji}</span>
-              <span>{content.category.name}</span>
+              <span className="truncate max-w-[150px] sm:max-w-none">{content.category.name}</span>
             </Link>
           </div>
 
           {/* Title */}
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">{content.title}</h1>
+          <h1 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 sm:mb-6 leading-tight">{content.title}</h1>
 
           {/* Meta */}
-          <div className="flex flex-wrap items-center gap-4 mb-6">
+          <div className="flex flex-wrap items-center gap-2 xs:gap-3 sm:gap-4 mb-4 sm:mb-6">
             <DifficultyBadge level={content.difficultyLevel} size="lg" />
-            <span className="px-3 py-1 bg-gray-800 text-gray-300 rounded-full text-sm">
+            <span className="px-2 xs:px-3 py-1 bg-gray-800 text-gray-300 rounded-full text-xs sm:text-sm">
               {content.contentType}
             </span>
-            <span className="text-gray-400">•</span>
-            <span className="text-gray-400">{readingTime} min read</span>
-            <span className="text-gray-400">•</span>
-            <span className="text-gray-400">{content.viewCount.toLocaleString()} views</span>
+            <span className="text-gray-400 hidden xs:inline">•</span>
+            <span className="text-xs sm:text-sm text-gray-400">{readingTime} min read</span>
+            <span className="text-gray-400 hidden xs:inline">•</span>
+            <span className="text-xs sm:text-sm text-gray-400">{content.viewCount.toLocaleString()} views</span>
           </div>
 
           {/* Description */}
           {content.description && (
-            <p className="text-xl text-gray-400 max-w-3xl">{content.description}</p>
+            <p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-3xl leading-relaxed">{content.description}</p>
           )}
         </div>
       </div>
 
       {/* Social Actions Bar - Sticky */}
-      <div className="sticky top-16 z-30 border-b border-gray-800 bg-gray-950/95 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+      <div className="sticky top-16 z-30 border-b border-gray-800 bg-gray-950/95 backdrop-blur-sm safe-area-top">
+        <div className="container mx-auto px-3 xs:px-4 sm:px-6 lg:px-8 py-2 sm:py-3">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5 xs:gap-2 sm:gap-3">
               {/* Upvote */}
               <button
                 onClick={() => handleVote(1)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
+                className={`flex items-center gap-1 xs:gap-1.5 sm:gap-2 px-2 xs:px-3 sm:px-4 py-2 rounded-lg transition min-h-touch min-w-touch ${
                   userVote === 1
                     ? 'bg-green-600 text-white'
-                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700 active:bg-gray-600'
                 }`}
+                aria-label="Upvote"
               >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-4 h-4 xs:w-5 xs:h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fillRule="evenodd"
                     d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
                     clipRule="evenodd"
                   />
                 </svg>
-                <span className="font-medium">{upvotes}</span>
+                <span className="font-medium text-sm xs:text-base">{upvotes}</span>
               </button>
 
               {/* Downvote */}
               <button
                 onClick={() => handleVote(-1)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
+                className={`flex items-center gap-1 xs:gap-1.5 sm:gap-2 px-2 xs:px-3 sm:px-4 py-2 rounded-lg transition min-h-touch min-w-touch ${
                   userVote === -1
                     ? 'bg-red-600 text-white'
-                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700 active:bg-gray-600'
                 }`}
+                aria-label="Downvote"
               >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-4 h-4 xs:w-5 xs:h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fillRule="evenodd"
                     d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z"
                     clipRule="evenodd"
                   />
                 </svg>
-                <span className="font-medium">{downvotes}</span>
+                <span className="font-medium text-sm xs:text-base">{downvotes}</span>
               </button>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 xs:gap-2 sm:gap-3">
               {/* Bookmark */}
               <button
                 onClick={handleBookmark}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
+                className={`flex items-center gap-1.5 xs:gap-2 px-2 xs:px-3 sm:px-4 py-2 rounded-lg transition min-h-touch ${
                   isBookmarked
                     ? 'bg-yellow-600 text-white'
-                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700 active:bg-gray-600'
                 }`}
+                aria-label={isBookmarked ? 'Remove bookmark' : 'Add bookmark'}
               >
                 <svg
-                  className="w-5 h-5"
+                  className="w-4 h-4 xs:w-5 xs:h-5 flex-shrink-0"
                   fill={isBookmarked ? 'currentColor' : 'none'}
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -262,7 +265,7 @@ export default function ContentDetailPage() {
                     d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
                   />
                 </svg>
-                <span className="hidden md:inline">
+                <span className="hidden sm:inline text-sm sm:text-base">
                   {isBookmarked ? 'Bookmarked' : 'Bookmark'}
                 </span>
               </button>
@@ -270,9 +273,10 @@ export default function ContentDetailPage() {
               {/* Share */}
               <button
                 onClick={() => setIsShareModalOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg transition"
+                className="flex items-center gap-1.5 xs:gap-2 px-2 xs:px-3 sm:px-4 py-2 bg-gray-800 text-gray-300 hover:bg-gray-700 active:bg-gray-600 rounded-lg transition min-h-touch"
+                aria-label="Share content"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 xs:w-5 xs:h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -280,7 +284,7 @@ export default function ContentDetailPage() {
                     d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
                   />
                 </svg>
-                <span className="hidden md:inline">Share</span>
+                <span className="hidden sm:inline text-sm sm:text-base">Share</span>
               </button>
             </div>
           </div>
@@ -288,8 +292,8 @@ export default function ContentDetailPage() {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
           {/* Main Content Column */}
           <div className="lg:col-span-8">
             {/* Render YouTube video if sourceType is YOUTUBE */}

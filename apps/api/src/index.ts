@@ -19,6 +19,10 @@ import { initYouTubeService } from './services/youtube';
 import { initYouTubeSyncService } from './services/youtube-sync';
 import { initYouTubeContentFilter } from './utils/youtube-filters';
 import { initYouTubeSyncCronJob } from './jobs/youtube-sync-cron';
+import { initNewsSyncService } from './services/news-sync';
+import { initNewsSyncCronJob } from './jobs/news-sync-cron';
+import passport from 'passport';
+import authRoutes from './routes/auth';
 
 const PORT = process.env.PORT || 4000;
 
@@ -59,10 +63,16 @@ async function startServer() {
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true }));
 
+  // Initialize Passport for OAuth
+  app.use(passport.initialize());
+
   // Health check
   app.get('/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
   });
+
+  // Auth routes (OAuth)
+  app.use('/auth', authRoutes);
 
   // Apollo Server setup
   const server = new ApolloServer({
@@ -108,6 +118,23 @@ async function startServer() {
     }
   } else {
     logger.warn('YOUTUBE_API_KEY not set - YouTube integration disabled');
+  }
+
+  // Initialize News Sync Services (always enabled)
+  try {
+    logger.info('Initializing news sync services...');
+
+    // Initialize news sync service
+    initNewsSyncService(pool, logger);
+
+    // Initialize and start cron job for automated news fetching
+    const newsCronJob = initNewsSyncCronJob(pool, logger);
+    newsCronJob.start();
+
+    logger.info('✅ News sync services initialized successfully');
+  } catch (error) {
+    logger.error('Failed to initialize news sync services:', error);
+    logger.warn('News sync will be disabled');
   }
 
   app.listen(PORT, () => {

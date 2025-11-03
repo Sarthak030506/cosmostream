@@ -62,7 +62,7 @@ export const youtubeResolvers = {
             COUNT(*) as total_categories,
             SUM(CASE WHEN sync_enabled THEN 1 ELSE 0 END) as enabled_categories,
             MAX(last_sync_at) as most_recent_sync,
-            (SELECT SUM(video_count) FROM youtube_content_stats) as total_videos
+            (SELECT COUNT(*) FROM content_items WHERE source_type = 'youtube') as total_videos
            FROM youtube_category_mappings`
         );
 

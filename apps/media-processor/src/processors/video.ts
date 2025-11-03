@@ -2,7 +2,7 @@ import { MediaConvertClient, CreateJobCommand } from '@aws-sdk/client-mediaconve
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import sharp from 'sharp';
 import { logger } from '../utils/logger';
-import { updateVideoStatus } from '../services/database';
+import { updateVideoStatus, updateVideoMetadata, createContentItemForVideo } from '../services/database';
 
 const mediaConvertClient = new MediaConvertClient({
   region: process.env.AWS_REGION || 'us-east-1',
@@ -28,7 +28,83 @@ export async function processVideoUpload(data: any) {
     // Update status to processing
     await updateVideoStatus(videoId, 'processing');
 
-    // Create MediaConvert job
+    // Check if we should use MediaConvert or S3-only mode
+    const useMediaConvert = !!(
+      process.env.AWS_ACCESS_KEY_ID &&
+      process.env.AWS_SECRET_ACCESS_KEY &&
+      process.env.AWS_MEDIACONVERT_ENDPOINT
+    );
+
+    const useS3Only = !!(
+      process.env.AWS_ACCESS_KEY_ID &&
+      process.env.AWS_SECRET_ACCESS_KEY &&
+      process.env.AWS_S3_BUCKET &&
+      !process.env.AWS_MEDIACONVERT_ENDPOINT
+    );
+
+    if (useS3Only) {
+      // S3-Only mode: Use original uploaded video (no transcoding)
+      logger.info(`📦 S3-only mode: Using original video for ${videoId}`);
+
+      // Simulate quick processing (2 seconds)
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      // Use S3 direct URL for the original uploaded file
+      const bucket = process.env.AWS_S3_UPLOAD_BUCKET || process.env.AWS_S3_BUCKET;
+      const region = process.env.AWS_REGION || 'us-east-1';
+      const videoUrl = `https://${bucket}.s3.${region}.amazonaws.com/${s3Key}`;
+      const thumbnailUrl = `https://${bucket}.s3.${region}.amazonaws.com/${s3Key.replace(/\.[^.]+$/, '-thumb.jpg')}`;
+
+      // Update video metadata and mark as ready
+      await updateVideoMetadata(videoId, {
+        manifestUrl: videoUrl, // Direct S3 URL (not HLS)
+        duration: 300, // Default duration (can be updated later with ffprobe)
+        thumbnailUrl: thumbnailUrl,
+      });
+
+      // Create content item for discovery/browse
+      await createContentItemForVideo(videoId);
+
+      logger.info(`✅ Video ${videoId} ready (S3-only, no transcoding)`);
+
+      return {
+        videoId,
+        status: 'ready',
+        manifestUrl: videoUrl,
+      };
+    }
+
+    if (!useMediaConvert) {
+      // Development mode: Simulate processing without AWS
+      logger.info(`⚠️  AWS not configured. Simulating video processing for ${videoId}`);
+
+      // Simulate processing delay (5 seconds)
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+
+      // Mock URLs
+      const mockManifestUrl = `https://cdn.cosmostream.com/videos/${videoId}/playlist.m3u8`;
+      const mockThumbnailUrl = `https://cdn.cosmostream.com/thumbnails/${videoId}/thumb.jpg`;
+
+      // Update video metadata and mark as ready
+      await updateVideoMetadata(videoId, {
+        manifestUrl: mockManifestUrl,
+        duration: 300,
+        thumbnailUrl: mockThumbnailUrl,
+      });
+
+      // Create content item for discovery/browse
+      await createContentItemForVideo(videoId);
+
+      logger.info(`✅ Video ${videoId} processing completed (simulated)`);
+
+      return {
+        videoId,
+        status: 'ready',
+        manifestUrl: mockManifestUrl,
+      };
+    }
+
+    // Production mode: Create MediaConvert job
     const jobSettings = {
       Role: process.env.AWS_MEDIACONVERT_ROLE || '',
       Settings: {
@@ -129,6 +205,10 @@ export async function processVideoUpload(data: any) {
     // Generate thumbnail (simplified)
     await generateThumbnail(videoId, s3Key);
 
+    // NOTE: In production, you should set up an EventBridge rule or SNS topic
+    // to listen for MediaConvert job completion events, then call:
+    // await completeVideoProcessing(videoId, manifestUrl, duration, thumbnailUrl);
+
     return {
       videoId,
       jobId: response.Job?.Id,
@@ -136,6 +216,32 @@ export async function processVideoUpload(data: any) {
     };
   } catch (error) {
     logger.error('Error processing video:', error);
+    await updateVideoStatus(videoId, 'failed');
+    throw error;
+  }
+}
+
+// Called when video processing is complete (by EventBridge/SNS webhook in production)
+export async function completeVideoProcessing(
+  videoId: string,
+  manifestUrl: string,
+  duration: number,
+  thumbnailUrl: string
+) {
+  try {
+    // Update video metadata and mark as ready
+    await updateVideoMetadata(videoId, {
+      manifestUrl,
+      duration,
+      thumbnailUrl,
+    });
+
+    // Create content item for discovery/browse
+    await createContentItemForVideo(videoId);
+
+    logger.info(`✅ Video ${videoId} processing completed`);
+  } catch (error) {
+    logger.error(`Error completing video ${videoId} processing:`, error);
     await updateVideoStatus(videoId, 'failed');
     throw error;
   }

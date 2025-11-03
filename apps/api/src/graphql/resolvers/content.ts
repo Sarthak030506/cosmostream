@@ -1001,6 +1001,10 @@ export const contentResolvers = {
       return (parent.source_type || 'native').toUpperCase();
     },
 
+    sourceUrl(parent: any) {
+      return parent.source_url || null;
+    },
+
     difficultyLevel(parent: any) {
       return parent.difficulty_level.toUpperCase();
     },
