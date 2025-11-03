@@ -237,11 +237,13 @@ export const videoResolvers = {
       );
 
       // Add video to processing queue
-      await addVideoToProcessingQueue({
+      console.log(`📹 Adding video ${videoId} to processing queue...`);
+      const job = await addVideoToProcessingQueue({
         videoId: videoId,
         s3Key: videoCheck.rows[0].s3_key,
         priority: 10,
       });
+      console.log(`✅ Video ${videoId} added to queue:`, job ? `Job ID ${job.id}` : 'Queue unavailable');
 
       // Return updated video
       const result = await db.query(
