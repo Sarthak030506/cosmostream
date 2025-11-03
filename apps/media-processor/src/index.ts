@@ -1,12 +1,20 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import path from 'path';
 import { logger } from './utils/logger';
 import { initializeQueue } from './queue';
 import { setupS3Listener } from './listeners/s3';
 
-dotenv.config();
+// Load .env from media-processor directory, fall back to shared API .env
+const mediaProcessorEnv = path.join(__dirname, '../.env');
+const sharedEnv = path.join(__dirname, '../../api/.env');
 
-const PORT = process.env.PORT || 4002;
+// Try media-processor .env first, then API .env
+dotenv.config({ path: mediaProcessorEnv });
+dotenv.config({ path: sharedEnv });
+
+// Media processor always uses 4002 (don't inherit PORT from API)
+const PORT = 4002;
 
 async function startServer() {
   const app = express();

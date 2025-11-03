@@ -1,8 +1,14 @@
 import { Pool } from 'pg';
+import dotenv from 'dotenv';
+import path from 'path';
 import { logger } from '../utils/logger';
 
+// Load environment variables before creating pool
+dotenv.config({ path: path.join(__dirname, '../../.env') });
+dotenv.config({ path: path.join(__dirname, '../../../api/.env') });
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/cosmostream',
 });
 
 export async function updateVideoStatus(videoId: string, status: string) {

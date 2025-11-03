@@ -44,7 +44,11 @@
       "Bash(TS_NODE_TRANSPILE_ONLY=true npx ts-node scripts/bulk-youtube-sync.ts --all --limit 20 --parallel 3)",
       "Bash(tree:*)",
       "Bash(dir /S C:UsershpDesktopCosmoStreammagicuidesign-blog-template-bc0cb81)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(\"/c/Program Files/PostgreSQL/15/bin/psql.exe\" -U postgres -d cosmostream -c \"SELECT id, title, processing_status, manifest_url, created_at FROM videos ORDER BY created_at DESC LIMIT 3;\")",
+      "Bash(npx ts-node:*)",
+      "Bash(awk:*)",
+      "Bash(xargs -I {} taskkill //F //PID {})"
     ],
     "deny": [],
     "ask": []

@@ -1,6 +1,12 @@
 import Queue from 'bull';
+import dotenv from 'dotenv';
+import path from 'path';
 import { logger } from '../utils/logger';
 import { processVideoUpload } from '../processors/video';
+
+// Ensure env is loaded
+dotenv.config({ path: path.join(__dirname, '../../.env') });
+dotenv.config({ path: path.join(__dirname, '../../../api/.env') });
 
 const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 
