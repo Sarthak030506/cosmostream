@@ -23,10 +23,26 @@ const authLink = setContext((_, { headers }) => {
 
 const apolloClient = new ApolloClient({
   link: authLink.concat(httpLink),
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          video: {
+            // Don't cache video queries - always fetch fresh
+            read(existing, { args, toReference }) {
+              return undefined; // Always fetch from network
+            },
+          },
+        },
+      },
+    },
+  }),
   defaultOptions: {
     watchQuery: {
       fetchPolicy: 'cache-and-network',
+    },
+    query: {
+      fetchPolicy: 'network-only', // Default to network-only for all queries
     },
   },
 });

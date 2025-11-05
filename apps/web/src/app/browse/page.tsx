@@ -279,28 +279,57 @@ export default function BrowsePage() {
                 className="group bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl overflow-hidden hover:border-cosmos-500 transition-all duration-300 hover:shadow-lg hover:shadow-cosmos-500/20"
               >
                 {/* Thumbnail */}
-                <div className="relative aspect-video bg-gray-800 overflow-hidden">
+                <div className="relative aspect-video bg-gradient-to-br from-gray-900 via-gray-800 to-black overflow-hidden">
                   {video.thumbnailUrl ? (
-                    <img
-                      src={video.thumbnailUrl}
-                      alt={video.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
+                    <>
+                      <img
+                        src={video.thumbnailUrl}
+                        alt={video.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          // If thumbnail fails to load, show fallback
+                          e.currentTarget.style.display = 'none';
+                          const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                          if (fallback) fallback.style.display = 'flex';
+                        }}
+                      />
+                      {/* Fallback for failed thumbnail loads */}
+                      <div className="absolute inset-0 hidden items-center justify-center bg-gradient-to-br from-gray-800 via-gray-900 to-black">
+                        <div className="text-center">
+                          <div className="text-7xl mb-2 opacity-40">🎬</div>
+                          <p className="text-xs text-gray-600">Thumbnail unavailable</p>
+                        </div>
+                      </div>
+                      {/* Play button overlay */}
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20">
+                        <div className="w-16 h-16 rounded-full bg-cosmos-600/90 flex items-center justify-center backdrop-blur-sm shadow-lg transform group-hover:scale-110 transition-transform">
+                          <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </div>
+                      </div>
+                    </>
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <div className="text-5xl">🎬</div>
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-800 via-gray-900 to-black">
+                      <div className="text-center p-8">
+                        <div className="text-7xl mb-3 opacity-40">🎬</div>
+                        <p className="text-xs text-gray-600 font-medium">No thumbnail</p>
+                      </div>
                     </div>
                   )}
                   {video.duration && (
-                    <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-2 py-1 rounded">
+                    <div className="absolute bottom-2 right-2 bg-black/90 backdrop-blur-sm text-white text-xs font-semibold px-2.5 py-1 rounded-md shadow-lg">
                       {Math.floor(video.duration / 60)}:{String(video.duration % 60).padStart(2, '0')}
                     </div>
                   )}
                   {video.status === 'processing' && (
-                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                      <span className="bg-yellow-500 text-black text-xs px-2 py-1 rounded font-semibold">
-                        Processing
-                      </span>
+                    <div className="absolute inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-yellow-500 mx-auto mb-2"></div>
+                        <span className="bg-yellow-500/20 border border-yellow-500/50 text-yellow-300 text-xs px-3 py-1.5 rounded-full font-semibold">
+                          Processing
+                        </span>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -322,11 +351,11 @@ export default function BrowsePage() {
 
                   {/* Tags */}
                   {video.tags && video.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-3">
+                    <div className="flex flex-wrap gap-1.5 mt-3">
                       {video.tags.slice(0, 2).map((tag: string) => (
                         <span
                           key={tag}
-                          className="px-2 py-1 bg-gray-800 text-gray-400 text-xs rounded"
+                          className="px-2.5 py-1 bg-gray-800/80 text-gray-400 text-xs rounded-md font-medium"
                         >
                           #{tag}
                         </span>
@@ -335,17 +364,27 @@ export default function BrowsePage() {
                   )}
 
                   {/* Category & Difficulty Badges */}
-                  <div className="flex gap-2 mt-3">
+                  <div className="flex flex-wrap gap-1.5 mt-3">
                     {video.category && (
-                      <span className="px-2 py-1 bg-cosmos-500/20 text-cosmos-300 text-xs rounded">
+                      <span className="px-2.5 py-1 bg-cosmos-500/20 text-cosmos-300 text-xs rounded-full border border-cosmos-500/30 font-medium">
                         {video.category}
                       </span>
                     )}
                     {video.difficulty && (
-                      <span className="px-2 py-1 bg-nebula-500/20 text-nebula-300 text-xs rounded">
+                      <span className="px-2.5 py-1 bg-nebula-500/20 text-nebula-300 text-xs rounded-full border border-nebula-500/30 font-medium">
                         {video.difficulty}
                       </span>
                     )}
+                  </div>
+
+                  {/* Video ID - Compact Display */}
+                  <div className="mt-3 pt-3 border-t border-gray-800/50">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[10px] text-gray-600 uppercase tracking-wider font-semibold">ID</span>
+                      <code className="text-[10px] text-gray-500 font-mono bg-gray-800/50 px-2 py-1 rounded border border-gray-700/50 truncate">
+                        {video.id.split('-')[0]}-{video.id.split('-')[1]}
+                      </code>
+                    </div>
                   </div>
                 </div>
               </Link>
