@@ -27,22 +27,15 @@ export async function generatePresignedUploadUrl(
   expiresIn: number = 3600,
   contentType: string = 'video/mp4'
 ): Promise<string> {
-  // Development mode: Return a mock URL if AWS is not configured
-  if (!hasAwsCredentials || !s3Client) {
-    console.warn(
-      '⚠️  AWS credentials not configured. Using mock upload URL for development.'
-    );
-    // Return a mock URL that the client can "upload" to (will be ignored)
-    return `http://localhost:4000/api/mock-upload/${encodeURIComponent(key)}`;
-  }
-
+  // Generate real S3 presigned URL
   const command = new PutObjectCommand({
-    Bucket: process.env.AWS_S3_UPLOAD_BUCKET || 'cosmostream-uploads',
+    Bucket: process.env.AWS_S3_UPLOAD_BUCKET || process.env.AWS_S3_BUCKET || 'cosmostream-videos-prod',
     Key: key,
     ContentType: contentType,
   });
 
   const url = await getSignedUrl(s3Client, command, { expiresIn });
+  console.log(`✅ Generated S3 presigned URL for upload: ${key}`);
   return url;
 }
 
