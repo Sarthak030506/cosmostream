@@ -1,9 +1,13 @@
 import Queue from 'bull';
+import dotenv from 'dotenv';
+
+// Load environment variables FIRST
+dotenv.config();
 
 const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 
-// Check if Redis is available
-const hasRedis = !!process.env.REDIS_URL || process.env.NODE_ENV === 'production';
+// Check if Redis is available - ALWAYS true since we have Redis running
+const hasRedis = true; // Force enable since Redis is always running in Docker
 
 // Initialize video processing queue (same queue as media-processor)
 export const videoQueue = hasRedis
