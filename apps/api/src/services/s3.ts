@@ -1,5 +1,9 @@
 import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import dotenv from 'dotenv';
+
+// Load environment variables FIRST
+dotenv.config();
 
 // Check if AWS credentials are configured
 const hasAwsCredentials = !!(
@@ -7,15 +11,13 @@ const hasAwsCredentials = !!(
   process.env.AWS_SECRET_ACCESS_KEY
 );
 
-const s3Client = hasAwsCredentials
-  ? new S3Client({
-      region: process.env.AWS_REGION || 'us-east-1',
-      credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-      },
-    })
-  : null;
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION || 'us-east-1',
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
+  },
+});
 
 // CloudFront configuration
 const CLOUDFRONT_DOMAIN = process.env.CLOUDFRONT_DOMAIN;
