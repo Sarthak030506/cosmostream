@@ -110,10 +110,11 @@ export default function VideoPage() {
                     controls
                     poster={video.thumbnailUrl || '/placeholder-video.jpg'}
                     onPlay={handleVideoPlay}
+                    preload="metadata"
                   >
-                    <source src={video.manifestUrl} type="application/x-mpegURL" />
+                    <source src={video.manifestUrl} type="video/mp4" />
                     <p className="text-white p-4">
-                      Your browser doesn't support HLS video playback.
+                      Your browser doesn't support video playback.
                     </p>
                   </video>
                 </div>
