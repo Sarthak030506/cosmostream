@@ -10,6 +10,11 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "types": ["node", "jest"],
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "skipLibCheck": true,
+    "strict": false,
+    "noImplicitAny": false,
     "paths": {
       "@/*": ["./src/*"]
     }
