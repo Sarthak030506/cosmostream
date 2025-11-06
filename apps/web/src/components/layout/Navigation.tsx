@@ -46,6 +46,9 @@ export function Navigation() {
             <Link href="/discover" className="text-sm hover:text-cosmos-400">
               Discover
             </Link>
+            <Link href="/about" className="text-sm hover:text-cosmos-400">
+              About
+            </Link>
             <Link href="/categories" className="text-sm hover:text-cosmos-400">
               Categories
             </Link>
@@ -187,6 +190,9 @@ export function Navigation() {
               </Link>
               <Link href="/discover" className="text-sm hover:text-cosmos-400">
                 Discover
+              </Link>
+              <Link href="/about" className="text-sm hover:text-cosmos-400">
+                About
               </Link>
               <Link href="/categories" className="text-sm hover:text-cosmos-400">
                 Categories
