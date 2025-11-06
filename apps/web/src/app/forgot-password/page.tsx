@@ -19,7 +19,7 @@ export default function ForgotPasswordPage() {
   const [error, setError] = useState('');
 
   const [requestReset, { loading }] = useMutation(REQUEST_PASSWORD_RESET, {
-    onCompleted: (data) => {
+    onCompleted: (_data) => {
       setSubmitted(true);
       setError('');
     },

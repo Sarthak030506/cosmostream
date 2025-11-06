@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useMutation, gql } from '@apollo/client';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 const LOGIN_MUTATION = gql`
@@ -21,7 +20,6 @@ const LOGIN_MUTATION = gql`
 `;
 
 export default function LoginPage() {
-  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');

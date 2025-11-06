@@ -59,7 +59,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
               {children}
             </blockquote>
           ),
-          code: ({ inline, className, children }) => {
+          code: ({ inline, className, children }: any) => {
             if (inline) {
               return (
                 <code className="bg-gray-800 text-cosmos-300 px-2 py-1 rounded text-sm font-mono">

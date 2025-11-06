@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
 interface TrafficSource {
   source: string;
@@ -66,7 +66,7 @@ export function TrafficSourceChart({ data }: TrafficSourceChartProps) {
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ name, percentage }) => `${name}: ${percentage.toFixed(1)}%`}
+                label={({ name, percentage }: any) => `${name}: ${percentage.toFixed(1)}%`}
                 outerRadius={100}
                 fill="#8884d8"
                 dataKey="value"

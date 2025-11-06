@@ -29,7 +29,7 @@ const apolloClient = new ApolloClient({
         fields: {
           video: {
             // Don't cache video queries - always fetch fresh
-            read(existing, { args, toReference }) {
+            read() {
               return undefined; // Always fetch from network
             },
           },

@@ -145,13 +145,12 @@ export function BookmarksGrid({ bookmarks, loading }: BookmarksGridProps) {
                   ageGroup: 'ALL',
                   tags: [],
                   mediaUrls: null,
-                  engagementScore: 0,
                   shareCount: 0,
                   downvotes: 0,
                   userVote: null,
                   isBookmarked: true,
                   updatedAt: bookmark.createdAt,
-                }}
+                } as any}
               />
               {bookmark.bookmarkNote && (
                 <div className="mt-2 p-3 bg-gray-900/50 border border-gray-800 rounded-lg">

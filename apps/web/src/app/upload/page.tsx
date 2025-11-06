@@ -34,7 +34,7 @@ export default function UploadPage() {
     difficulty: 'beginner',
     tags: '',
   });
-  const [uploadedVideoId, setUploadedVideoId] = useState<string | null>(null);
+  const [_uploadedVideoId, setUploadedVideoId] = useState<string | null>(null);
 
   const { data: userData, loading: userLoading } = useQuery(GET_ME);
   const { data: categoriesData, loading: categoriesLoading } = useQuery(GET_CATEGORIES, {

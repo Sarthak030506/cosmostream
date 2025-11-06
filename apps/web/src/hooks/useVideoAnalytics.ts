@@ -23,7 +23,7 @@ interface VideoAnalyticsOptions {
 }
 
 interface PlaybackEvent {
-  type: 'play' | 'pause' | 'seek' | 'complete' | 'quality_change' | 'speed_change' | 'buffer';
+  type: 'play' | 'pause' | 'seek' | 'complete' | 'milestone' | 'quality_change' | 'speed_change' | 'buffer';
   timestamp: number;  // Position in video (seconds)
   data?: Record<string, any>;
 }

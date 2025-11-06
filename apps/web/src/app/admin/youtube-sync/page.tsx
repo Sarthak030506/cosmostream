@@ -113,7 +113,7 @@ export default function YouTubeSyncAdminPage() {
     if (selectedCategories.size === categoriesData?.categories.length) {
       setSelectedCategories(new Set());
     } else {
-      const allIds = new Set(categoriesData?.categories.map((c: any) => c.id) || []);
+      const allIds = new Set<string>(categoriesData?.categories.map((c: any) => c.id as string) || []);
       setSelectedCategories(allIds);
     }
   };

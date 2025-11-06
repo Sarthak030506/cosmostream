@@ -32,7 +32,7 @@ export function VideoUploader({ onUploadComplete, onUploadError, initialMetadata
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const [videoId, setVideoId] = useState<string | null>(null);
+  const [_videoId, setVideoId] = useState<string | null>(null);
 
   const [requestUploadUrl] = useMutation(REQUEST_UPLOAD_URL);
   const [completeVideoUpload] = useMutation(COMPLETE_VIDEO_UPLOAD);

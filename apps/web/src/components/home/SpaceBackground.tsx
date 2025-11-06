@@ -47,7 +47,7 @@ export function SpaceBackground() {
       time += 0.01;
 
       // Draw and animate stars
-      starLayers.forEach((stars, layerIndex) => {
+      starLayers.forEach((stars) => {
         stars.forEach((star) => {
           // Drift animation
           star.x -= star.speed;

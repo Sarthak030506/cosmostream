@@ -71,11 +71,11 @@ export function DifficultyChart({ data }: DifficultyChartProps) {
 
     // Add hover effect
     slices
-      .on('mouseenter', function () {
-        d3.select(this).style('opacity', 1).attr('d', outerArc);
+      .on('mouseenter', function (_event, d) {
+        d3.select(this).style('opacity', 1).attr('d', outerArc(d) as string);
       })
-      .on('mouseleave', function () {
-        d3.select(this).style('opacity', 0.9).attr('d', arc);
+      .on('mouseleave', function (_event, d) {
+        d3.select(this).style('opacity', 0.9).attr('d', arc(d) as string);
       });
 
     // Add labels

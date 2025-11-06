@@ -48,7 +48,9 @@
       "Bash(\"/c/Program Files/PostgreSQL/15/bin/psql.exe\" -U postgres -d cosmostream -c \"SELECT id, title, processing_status, manifest_url, created_at FROM videos ORDER BY created_at DESC LIMIT 3;\")",
       "Bash(npx ts-node:*)",
       "Bash(awk:*)",
-      "Bash(xargs -I {} taskkill //F //PID {})"
+      "Bash(xargs -I {} taskkill //F //PID {})",
+      "Bash(ping:*)",
+      "Bash(nul)"
     ],
     "deny": [],
     "ask": []

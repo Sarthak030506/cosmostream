@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useMutation, gql } from '@apollo/client';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 const SIGNUP_MUTATION = gql`
@@ -21,7 +20,6 @@ const SIGNUP_MUTATION = gql`
 `;
 
 export default function SignupPage() {
-  const router = useRouter();
   const [formData, setFormData] = useState({
     name: '',
     email: '',

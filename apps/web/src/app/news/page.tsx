@@ -52,7 +52,7 @@ export default function NewsPage() {
 
   // Fetch news based on filters
   const categorySlug = NEWS_CATEGORIES.find((c) => c.value === selectedCategory)?.slug;
-  const { data, loading, error, fetchMore } = useQuery(
+  const { data, loading, fetchMore } = useQuery(
     debouncedSearch
       ? SEARCH_NEWS
       : categorySlug
@@ -292,7 +292,7 @@ export default function NewsPage() {
             news.length < 4 ? "border-b" : "border-b-0"
           }`}
         >
-          {news.map((item: any, index: number) => {
+          {news.map((item: any) => {
             const formattedDate = new Date(item.createdAt).toLocaleDateString('en-US', {
               year: 'numeric',
               month: 'long',

@@ -27,7 +27,7 @@ export default function ResetPasswordPage() {
   const [success, setSuccess] = useState(false);
 
   const [resetPassword, { loading }] = useMutation(RESET_PASSWORD, {
-    onCompleted: (data) => {
+    onCompleted: (_data) => {
       setSuccess(true);
       setError('');
       // Redirect to login after 3 seconds

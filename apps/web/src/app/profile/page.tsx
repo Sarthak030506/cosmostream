@@ -58,7 +58,7 @@ export default function ProfilePage() {
   });
 
   const { data: userData, loading: userLoading, error: userError, refetch } = useQuery(GET_ME);
-  const { data: profileData, loading: profileLoading } = useQuery(GET_MY_ASTRONOMY_PROFILE);
+  const { data: profileData } = useQuery(GET_MY_ASTRONOMY_PROFILE);
   const { data: bookmarksData, loading: bookmarksLoading } = useQuery(GET_MY_BOOKMARKED_CONTENT, {
     variables: { limit: 50 },
   });

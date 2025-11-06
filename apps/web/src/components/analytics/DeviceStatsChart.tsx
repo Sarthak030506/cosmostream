@@ -85,7 +85,7 @@ export function DeviceStatsChart({ data }: DeviceStatsChartProps) {
                 borderRadius: '8px',
                 color: '#F9FAFB',
               }}
-              formatter={(value: any, name: string, props: any) => [
+              formatter={(value: any, _name: string, props: any) => [
                 `${value.toLocaleString()} (${props.payload.percentage.toFixed(1)}%)`,
                 'Views',
               ]}

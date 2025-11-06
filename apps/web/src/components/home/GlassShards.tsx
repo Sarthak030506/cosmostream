@@ -1,7 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-
 interface Shard {
   id: number;
   left: string;

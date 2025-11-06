@@ -29,7 +29,7 @@ export function NewsCard({
   date,
   thumbnail,
   category,
-  sourceUrl,
+  sourceUrl: _sourceUrl,
   viewCount,
   isBookmarked = false,
   onBookmark,

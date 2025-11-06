@@ -167,7 +167,7 @@ export function EngagementChart({ data, title, color = '#8b5cf6' }: EngagementCh
       .attr('r', 0)
       .attr('fill', color)
       .transition()
-      .delay((d, i) => (i / parsedData.length) * 1500)
+      .delay((_d, i) => (i / parsedData.length) * 1500)
       .duration(300)
       .attr('r', 4);
 
