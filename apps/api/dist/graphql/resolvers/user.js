@@ -1,0 +1,122 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.userResolvers = void 0;
+const graphql_1 = require("graphql");
+exports.userResolvers = {
+    Query: {
+        async me(_, __, { user, db }) {
+            if (!user) {
+                throw new graphql_1.GraphQLError('Not authenticated', {
+                    extensions: { code: 'UNAUTHENTICATED' },
+                });
+            }
+            const result = await db.query('SELECT id, email, name, role, created_at FROM users WHERE id = $1', [user.id]);
+            if (result.rows.length === 0) {
+                return null;
+            }
+            const userData = result.rows[0];
+            return {
+                id: userData.id,
+                email: userData.email,
+                name: userData.name,
+                role: userData.role.toUpperCase(),
+                createdAt: userData.created_at,
+            };
+        },
+        async user(_, { id }, { db }) {
+            const result = await db.query('SELECT id, email, name, role, created_at FROM users WHERE id = $1', [id]);
+            if (result.rows.length === 0) {
+                return null;
+            }
+            const user = result.rows[0];
+            return {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                role: user.role.toUpperCase(),
+                createdAt: user.created_at,
+            };
+        },
+    },
+    Mutation: {
+        async updateProfile(_, { name, bio, avatar }, { user, db }) {
+            if (!user) {
+                throw new graphql_1.GraphQLError('Not authenticated', {
+                    extensions: { code: 'UNAUTHENTICATED' },
+                });
+            }
+            // Update user profile
+            const updates = [];
+            const values = [];
+            let paramCount = 1;
+            if (name) {
+                updates.push(`name = $${paramCount++}`);
+                values.push(name);
+            }
+            if (updates.length > 0) {
+                values.push(user.id);
+                await db.query(`UPDATE users SET ${updates.join(', ')} WHERE id = $${paramCount}`, values);
+            }
+            // Update profile fields
+            if (bio !== undefined || avatar !== undefined) {
+                await db.query(`INSERT INTO user_profiles (user_id, bio, avatar)
+           VALUES ($1, $2, $3)
+           ON CONFLICT (user_id)
+           DO UPDATE SET bio = COALESCE($2, user_profiles.bio),
+                         avatar = COALESCE($3, user_profiles.avatar)`, [user.id, bio, avatar]);
+            }
+            const result = await db.query('SELECT id, email, name, role, created_at FROM users WHERE id = $1', [user.id]);
+            const userData = result.rows[0];
+            return {
+                id: userData.id,
+                email: userData.email,
+                name: userData.name,
+                role: userData.role.toUpperCase(),
+                createdAt: userData.created_at,
+            };
+        },
+        async applyForCreator(_, { credentials }, { user, db }) {
+            if (!user) {
+                throw new graphql_1.GraphQLError('Not authenticated', {
+                    extensions: { code: 'UNAUTHENTICATED' },
+                });
+            }
+            // Create or update creator profile
+            await db.query(`INSERT INTO creator_profiles (user_id, credentials, approval_status, verified)
+         VALUES ($1, $2, 'pending', false)
+         ON CONFLICT (user_id)
+         DO UPDATE SET credentials = $2, approval_status = 'pending'`, [user.id, credentials]);
+            return {
+                verified: false,
+                approvalStatus: 'PENDING',
+                credentials,
+                subscriberCount: 0,
+                totalViews: 0,
+            };
+        },
+    },
+    User: {
+        async profile(parent, _, { db }) {
+            const result = await db.query('SELECT avatar, bio, location, website FROM user_profiles WHERE user_id = $1', [parent.id]);
+            return result.rows[0] || null;
+        },
+        async creatorProfile(parent, _, { db }) {
+            const result = await db.query(`SELECT verified, approval_status, credentials,
+                (SELECT COUNT(*) FROM creator_subscriptions WHERE creator_id = $1) as subscriber_count,
+                (SELECT COALESCE(SUM(views), 0) FROM videos WHERE creator_id = $1) as total_views
+         FROM creator_profiles WHERE user_id = $1`, [parent.id]);
+            if (result.rows.length === 0) {
+                return null;
+            }
+            const profile = result.rows[0];
+            return {
+                verified: profile.verified,
+                approvalStatus: profile.approval_status.toUpperCase(),
+                credentials: profile.credentials,
+                subscriberCount: parseInt(profile.subscriber_count),
+                totalViews: parseInt(profile.total_views),
+            };
+        },
+    },
+};
+//# sourceMappingURL=user.js.map

@@ -1,0 +1,1 @@
+{"version":3,"file":"video-queue.d.ts","sourceRoot":"","sources":["../../src/services/video-queue.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,MAAM,MAAM,CAAC;AAYzB,eAAO,MAAM,UAAU,kBAUf,CAAC;AAET,wBAAsB,yBAAyB,CAAC,IAAI,EAAE;IACpD,OAAO,EAAE,MAAM,CAAC;IAChB,KAAK,EAAE,MAAM,CAAC;IACd,QAAQ,CAAC,EAAE,MAAM,CAAC;CACnB,2BAmBA"}
