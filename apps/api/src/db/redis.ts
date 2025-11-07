@@ -1,15 +1,18 @@
 import Redis from 'ioredis';
 import { logger } from '../utils/logger';
 
-const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
+const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+const isLocalRedis = redisUrl.includes('localhost') || redisUrl.includes('127.0.0.1');
+
+const redis = new Redis(redisUrl, {
   password: process.env.REDIS_PASSWORD,
   retryStrategy: (times) => {
     const delay = Math.min(times * 50, 2000);
     return delay;
   },
   maxRetriesPerRequest: 3,
-  // Enable TLS for production (Upstash requires it)
-  tls: process.env.NODE_ENV === 'production' ? {} : undefined,
+  // Enable TLS only for remote Redis (Upstash, etc), not localhost
+  tls: !isLocalRedis && process.env.NODE_ENV === 'production' ? {} : undefined,
   // Add family option for better DNS resolution
   family: 4,
 });
