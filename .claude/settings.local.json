@@ -50,7 +50,8 @@
       "Bash(awk:*)",
       "Bash(xargs -I {} taskkill //F //PID {})",
       "Bash(ping:*)",
-      "Bash(nul)"
+      "Bash(nul)",
+      "Bash(ssh:*)"
     ],
     "deny": [],
     "ask": []
